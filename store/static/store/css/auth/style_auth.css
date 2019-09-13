@@ -1,0 +1,31 @@
+.auth_page {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.auth_page form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.login_area {
+	padding: 1em;
+	margin: 1em;
+	border: 1px solid black;
+}
+
+.login_area * {
+	margin: 5px;
+}
+
+.new_user_area {
+	padding: 1em;
+	margin: 1em;
+	border: 1px solid black;
+}
+
+.new_user_area * {
+	margin: 5px;
+}

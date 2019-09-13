@@ -2,5 +2,5 @@
 .idea/
 __pycache__/
 venv/
-manage.py
 migrations/
+static/image/

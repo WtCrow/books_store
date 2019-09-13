@@ -1,0 +1,94 @@
+h2 {
+	display: flex;
+	justify-content: center;
+}
+
+.story_sales li {
+	list-style: none;
+}
+
+.profile {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	align-content: center;
+}
+
+.profile img {
+	height: 300px;
+	max-width: 300px;
+}
+
+.profile >* {
+	margin: 1em;
+	border: 1px solid black;
+}
+
+.user {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.user * {
+	margin: 5px;
+}
+
+.edit_area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.edit_area * {
+	margin: 5px;
+}
+
+.story_sales {
+	padding: 1em;
+}
+
+.story_sales > ul {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	grid-gap: 1em;
+}
+
+.story_sales > ul > li {
+	display: grid;
+    height: 200px;
+	align-self: center;
+	justify-self: center;
+}
+
+.story_sales img {
+	height: 100px;
+	align-self: center;
+	justify-self: center;
+}
+
+.product_info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.pages_numbers {
+	display: flex;
+	justify-content: center;
+}
+
+.pages_numbers * {
+	padding: 1em;
+	border: 1px solid black;
+}
+
+.pages_numbers a:hover {
+    background-color: black;
+}
+
+.current_page {
+	background-color: red;
+}

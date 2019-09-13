@@ -1,0 +1,64 @@
+/*main*/
+
+.main_content {
+}
+
+:root {
+    --gutter: 20px;
+}
+
+.scroll_panel {
+    display: grid;
+    padding: 1em;
+}
+
+.scroll_panel h2 {
+    padding-bottom: 15px;
+}
+
+.scroll_panel a:hover {
+    color: #ED6CB8
+}
+
+.scroll_area {
+    display: grid;
+    list-style: none;
+    padding: 0;
+    grid-gap: calc(var(--gutter) / 2);
+    grid-template-columns: repeat(10, 2fr);
+    overflow-x: scroll;
+    padding-bottom: calc(.75 * var(--gutter));
+    margin-bottom: calc(-.25 * var(--gutter));
+    grid-auto-rows: minmax(auto, auto);
+    scroll-snap-type: x proximity;
+}
+
+.item {
+    scroll-snap-align: center;
+    padding: calc(var(--gutter) / 2 * 1.5);
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-gap: 5px;
+    background: #456173;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid black;
+    height: 400px;
+}
+
+.item img {
+    height: 250px;
+}
+
+.item * {
+    align-self: center;
+    justify-self: center;
+}
+
+.buy_area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+}

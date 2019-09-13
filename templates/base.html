@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+          rel="stylesheet"  type='text/css'>
+    <link rel="stylesheet"  type='text/css' href="{% static 'css/style.css' %}">
+    {% block additional_styles %}{% endblock %}
+    {% block base_url %}<base href = "http://127.0.0.1:8000/store" />{% endblock %}
+    <title>{% block title %} Books store {% endblock %}</title>
+</head>
+<body>
+    <div class="login_menu">
+        {% if user.is_authorized %}
+            <a href="/profile">Вы вошли</a>
+        {% else %}
+            <a href="/auth">Войти</a>
+        {% endif %}
+    </div>
+    <header>
+        <div class="header_box">
+            <div class="main_logo">
+                <a href="#"><img src="{% static 'image/logo.jpg' %}"></a>
+            </div>
+            <form class="search_form" method="post">
+                <input type="text" placeholder="Поиск..." name="">
+                <button type="submit"></button>
+            </form>
+            <div class="basket">
+                <a href="#"><img src="{% static 'image/basket.jpg' %}"></a>
+                <span>В корзине 1 товар(ов)</span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul class="hover-menu">
+            <li><a href="">Книги</a>
+                <ul>
+                    <li><a href="">Программирование</a></li>
+                    <li><a href="">Художественная литература</a></li>
+                    <li><a href="">Деловая литература</a></li>
+                </ul>
+            </li>
+            <li><a href="">Канцелярские товары</a>
+                <ul>
+                    <li><a href="">Бумажные изделия</a></li>
+                    <li><a href="">Письменные принадлежности</a></li>
+                </ul>
+            </li>
+            <li><a href="">Творчество</a>
+                <ul>
+                    <li><a href="">Инструменты и приспосабления</a></li>
+                    <li><a href="">Декарирование</a></li>
+                    <li><a href="">Расходные материалы</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        {% block main_content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="footer_content">
+            <div class="footer_contact">
+                Электронная почта: e-mail@email.com
+            </div>
+            <div class="footer_copyright">
+                copyrightcopyrightcopyrightcopyrightcopyrightcopyrightcopyrightcopyrightc
+            </div>
+            <div class="footer_pay">
+                Принимаем к оплате: TODO: поработать с каким-нибудь API
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

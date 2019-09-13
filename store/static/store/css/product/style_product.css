@@ -1,0 +1,22 @@
+.product_page {
+	display: grid;
+	grid-template-columns: 1fr 4fr 1fr;
+	grid-gap: 1em;
+	width: 100%;
+	padding: 1em;
+}
+
+.product_page img {
+	height: 450px;
+	width: 300px;
+}
+
+.buy_area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.buy_area * {
+	padding: 1em;
+}
