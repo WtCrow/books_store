@@ -23,3 +23,12 @@ def profile(request):
 
 def auth(request):
     return render(request, 'store/auth.html', context={})
+
+
+def logout(request):
+    return HttpResponse()
+
+
+def handler404(request, *args, **argv):
+    message = 'Запрошенный ресурс не найден.'
+    return render(request, 'store/message.html', context={message: message}, status=404)
