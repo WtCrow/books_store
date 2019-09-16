@@ -15,16 +15,21 @@
         {% if user.is_authorized %}
             <a href="/profile">Вы вошли</a>
         {% else %}
-            <a href="/auth">Войти</a>
+            <a href="/accounts/login">Войти</a>
         {% endif %}
     </div>
     <header>
         <div class="header_box">
             <div class="main_logo">
-                <a href="#"><img src="{% static 'image/logo.jpg' %}"></a>
+                <a href="{% url 'index' %}"><img src="{% static 'image/logo.jpg' %}"></a>
             </div>
-            <form class="search_form" method="post">
-                <input type="text" placeholder="Поиск..." name="">
+            {% if category %}
+            <form class="search_form" method="get" action="{% url 'root_search' 'category' %}">
+            {% else %}
+            <form class="search_form" method="get" action="{% url 'root_search' %}">
+            {% endif %}
+                {% csrf_token %}
+                <input type="text" placeholder="Поиск..." name="search">
                 <button type="submit"></button>
             </form>
             <div class="basket">
@@ -35,24 +40,24 @@
     </header>
     <nav>
         <ul class="hover-menu">
-            <li><a href="">Книги</a>
+            <li><a href="{% url 'root_books' %}">Книги</a>
                 <ul>
-                    <li><a href="">Программирование</a></li>
-                    <li><a href="">Художественная литература</a></li>
-                    <li><a href="">Деловая литература</a></li>
+                    <li><a href="{% url 'root_books' 'programming' %}">Программирование</a></li>
+                    <li><a href="{% url 'root_books' 'fiction' %}">Художественная литература</a></li>
+                    <li><a href="{% url 'root_books' 'business' %}">Деловая литература</a></li>
                 </ul>
             </li>
-            <li><a href="">Канцелярские товары</a>
+            <li><a href="{% url 'root_stationery' %}">Канцелярские товары</a>
                 <ul>
-                    <li><a href="">Бумажные изделия</a></li>
-                    <li><a href="">Письменные принадлежности</a></li>
+                    <li><a href="{% url 'root_stationery' 'paper' %}">Бумажные изделия</a></li>
+                    <li><a href="{% url 'root_stationery' 'writing' %}">Письменные принадлежности</a></li>
                 </ul>
             </li>
-            <li><a href="">Творчество</a>
+            <li><a href="{% url 'root_creations' %}">Творчество</a>
                 <ul>
-                    <li><a href="">Инструменты и приспосабления</a></li>
-                    <li><a href="">Декарирование</a></li>
-                    <li><a href="">Расходные материалы</a></li>
+                    <li><a href="{% url 'root_creations' 'tool' %}">Инструменты и приспосабления</a></li>
+                    <li><a href="{% url 'root_creations' 'decoration' %}">Декарирование</a></li>
+                    <li><a href="{% url 'root_creations' 'consumables' %}">Расходные материалы</a></li>
                 </ul>
             </li>
         </ul>
@@ -63,13 +68,15 @@
     <footer>
         <div class="footer_content">
             <div class="footer_contact">
-                Электронная почта: e-mail@email.com
+                Электронная почта: denis.babenko3009@gmail.com
             </div>
             <div class="footer_copyright">
-                copyrightcopyrightcopyrightcopyrightcopyrightcopyrightcopyrightcopyrightc
-            </div>
-            <div class="footer_pay">
-                Принимаем к оплате: TODO: поработать с каким-нибудь API
+                <del>© copyright все права защищены.</del><br />
+                Сайт написан с использованием фреймворка <a href="https://docs.djangoproject.com/" target="_blank">Django</a>.
+                Исходный код вы можете найти по <a href="https://github.com/WtCrow/books_store" target="_blank">этой ссылке</a>.<br />
+                Заполнение сайта любезно предоставлено магазином
+                <a href="https://chitai-gorod.ru" target="_blank">Читай город</a>,
+                простенький парсер так же прилагается к исходному коду.
             </div>
         </div>
     </footer>

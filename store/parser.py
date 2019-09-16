@@ -62,6 +62,9 @@ class ProductsParser:
         descriptions = soup.find("div", attrs={"itemprop": "description"}).contents
         descriptions = [str(item).strip() for item in descriptions]
         descriptions = ''.join(descriptions)
+        descriptions.replace('<br>', '')
+        descriptions.replace('<br/>', '')
+        descriptions.replace('</br>', '')
 
         price = soup.find("div", attrs={"class": "price"}).contents[0]
         price = float(price.split(' ')[0])  # '300 Р' -> 300
@@ -77,15 +80,15 @@ class ProductsParser:
 
         return product
 
-    def parse_model(self, url):
+    def parse(self, url):
         html = requests.get(url).text
 
-        product = self._get_base_product(html)
-        if not product:
+        new_product = self._get_base_product(html)
+        if not new_product:
             return
-        product.save()
+        new_product.save()
 
-        obj = self.class_model.objects.create(product=product)
+        obj = self.class_model.objects.create(product=new_product)
 
         return obj
 
@@ -97,7 +100,7 @@ class ProductsParser:
             refs = [self.base_url + ref for ref in refs]
 
             with Pool(24) as p:
-                p.map(self.parse_model, refs)
+                p.map(self.parse, refs)
 
 
 class BooksParser(ProductsParser):
@@ -106,19 +109,20 @@ class BooksParser(ProductsParser):
         super().__init__(part_url, subcategory_name, Book)
 
     def parse(self, url):
-        book = super().parse_model(url)
+        book = super().parse(url)
         if not book:
             return
         html = requests.get(url).text
 
         soup = BeautifulSoup(html, 'html.parser')
-        authors = soup.find("a", attrs={"class": "product__author"}).contents
+        authors = soup.find("a", attrs={"class": "link product__author"}).contents
         authors = [str(author).strip() for author in authors]
 
         for author in authors:
             if not Author.objects.filter(name=author):
-                Author.objects.create(name=author)
-            book.authors.add(Author.objects.get(name=author))
+                book.authors.add(Author.objects.create(name=author))
+            else:
+                book.authors.add(Author.objects.get(name=author))
 
         return book
 
@@ -126,47 +130,47 @@ class BooksParser(ProductsParser):
 if __name__ == '__main__':
     # Books
     BooksParser(part_url='/catalog/books/programmirovaniye-9185/?page=',
-                subcategory_name='Программирование').parse_category()
+                subcategory_name='programming').parse_category()
     BooksParser(part_url='/catalog/books/klassicheskaya_i_sovremennaya_proza-9665/?page=',
-                subcategory_name='Художественная литература').parse_category()
+                subcategory_name='fiction').parse_category()
     BooksParser(part_url='/catalog/books/delovaya_literatura-8979/?page=',
-                subcategory_name='Деловая литература').parse_category()
+                subcategory_name='business').parse_category()
 
     # Creation
     ProductsParser(part_url='/catalog/hobbies/dekorirovaniye-18242/?page=',
-                   subcategory_name='Декарирование', class_model=Creation).parse_category()
+                   subcategory_name='decoration', class_model=Creation).parse_category()
     ProductsParser(part_url='/catalog/hobbies/instrumenty_i_prisposobleniya-18218/?page=',
-                   subcategory_name='Инструменты и приспосабления', class_model=Creation).parse_category()
+                   subcategory_name='tool', class_model=Creation).parse_category()
     ProductsParser(part_url='/catalog/hobbies/raskhodnyye_materialy-18219/?page=',
-                   subcategory_name='Расходные материалы', class_model=Creation).parse_category()
+                   subcategory_name='consumables', class_model=Creation).parse_category()
 
     # Stationery
     ProductsParser(part_url='/catalog/kanctovars/bumazhnyye_izdeliya-2856/?page=',
-                   subcategory_name='Бумажные изделия', class_model=Stationery).parse_category()
+                   subcategory_name='paper', class_model=Stationery).parse_category()
     ProductsParser(part_url='/catalog/kanctovars/pismennyye_prinadlezhnosti-2963/?page=',
-                   subcategory_name='Письменные принадлежности', class_model=Stationery).parse_category()
+                   subcategory_name='writing', class_model=Stationery).parse_category()
 
 
 """
-DELETE FROM store_book_authors;
-DELETE FROM store_author;
-DELETE FROM store_book;
-DELETE FROM store_product;
-DELETE FROM store_subcategory;
+-- DELETE FROM store_book_authors;
+-- DELETE FROM store_author;
+-- DELETE FROM store_book;
+-- DELETE FROM store_product;
+-- DELETE FROM store_subcategory;
 
 SELECT *
 FROM store_product INNER JOIN store_subcategory
 ON store_product.subcategory_id = store_subcategory.id
 WHERE store_subcategory.name = 
--- 'Программирование'
--- 'Художественная литература'
--- 'Деловая литература'
+-- 'programming'
+-- 'fiction'
+-- 'consumables'
 
--- 'Инструменты и приспосабления'
--- 'Расходные материалы'
--- 'Декарирование'
+-- 'decoration'
+-- 'tool'
+-- 'consumables'
 
--- 'Бумажные изделия'
--- 'Письменные принадлежности'
+-- 'paper'
+-- 'writing'
 
 """

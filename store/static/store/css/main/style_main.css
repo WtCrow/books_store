@@ -49,6 +49,12 @@
 
 .item img {
     height: 250px;
+    width: 175px;
+}
+
+.name_product {
+    max-height: 2.4em;
+    overflow: hidden;
 }
 
 .item * {

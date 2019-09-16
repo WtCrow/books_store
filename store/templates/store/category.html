@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/category/style_category.css' %}">{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block main_content %}
+{{ debug }}
+        <h2>{{ title }} {{ total_count }} товаров</h2>
+        <div class="products">
+            {% for product in products %}
+            <a href="{{ product.get_absolute_url }}"><div class="product" title="{{ product.product.name }}">
+                <img src="{% static product.product.picture_name.url %}">
+                <span class="name_product">{{ product.product.name }}</span>
+                {% for author in product.authors.all %}
+                <span class="author_product">{{ author.name }}</span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                <div class="buy_area">
+                    <span>{{ product.product.price|floatformat }} руб.</span>
+                    <button>Купить</button>
+                </div>
+            </div></a>
+            {% endfor %}
+        </div>
+        <div class="numbers_page">
+        {% for page_number in numbers_pages %}
+            {% if page_number == current_page %}
+            <span class="current_page">{{ page_number }}</span>
+            {% else %}
+            <a href="{{ current_url }}?page={{ page_number }}">{{ page_number }}</a>
+            {% endif %}
+        {% endfor %}
+        </div>
+{% endblock %}

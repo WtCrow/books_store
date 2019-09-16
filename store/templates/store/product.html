@@ -1,20 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
 {% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/product/style_product.css' %}">{% endblock %}
-{% block title %} { Your profile } {% endblock %}
+{% block title %} {{ object.product.name }} {% endblock %}
 
 {% block main_content %}
         <div class="product_page">
-            <img src="product.jpg">
+            <img src="{% static object.product.picture_name.url %}">
             <article>
-                <p><b>Name</b></p>
-                <p><i>Author</i></p>
+                <p><b>{{ object.product.name }}</b></p>
+                {% if object.authors.all %}
+                <p><i>
+                    {% for author in object.authors.all %}
+                        {{ author }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </i></p>
                 <br />
-                <p>
-                50-й, юбилейный роман Александры Марининой. Впервые Анастасия Каменская изучает старое уголовное дело по реальному преступлению. Осужденный по нему до сих пор отбывает наказание в исправительном учреждении. С детства мы привыкли верить, что правда - одна. Она - как белый камешек в куче черного щебня. Достаточно всё перебрать, и обязательно её найдешь – единственную, неоспоримую, безусловную правду… Но так ли это? Когда-то давно в московской коммуналке совершено жестокое тройное убийство родителей и ребенка. Подозреваемый сам явился с повинной. Его задержали, состоялось следствие и суд. По прошествии двадцати лет старое уголовное дело попадает в руки легендарного оперативника в отставке Анастасии Каменской и молодого журналиста Петра Кравченко. Парень считает, что осужденного подставили, и стремится вывести следователей на чистую воду. Тут-то и выясняется, что каждый в этой истории движим своей правдой, порождающей в свою очередь тысячи видов лжи…</p>
+                {% endif %}
+                {{ object.product.description }}
             </article>
             <div class="buy_area">
-                <span>3000 руб.</span>
+                <span>{{ object.product.price|floatformat }} руб.</span>
                 <button>Купить</button>
             </div>
         </div>

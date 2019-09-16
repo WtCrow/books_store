@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %} { name_category } {% endblock %}
+{% block title %} {{ code }} {% endblock %}
 
 {% block main_content %}
-        <div >
-            <p>{% message %}</p>
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 300px; font-size: 3em;">
+            <p>{{ message }}</p>
         </div>
 {% endblock %}

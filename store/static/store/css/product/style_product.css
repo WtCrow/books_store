@@ -8,7 +8,7 @@
 
 .product_page img {
 	height: 450px;
-	width: 300px;
+	border: 1px solid black;
 }
 
 .buy_area {

@@ -1,15 +1,47 @@
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+{% extends "base.html" %}
+{% load static %}
+{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static '/css/auth/style_auth.css' %}">{% endblock %}
+{% block title %} { name_category } {% endblock %}
 
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
-    {% endif %}
-{% endif %}
+{% block main_content %}
+        <div class="auth_page">
+            <div class="login_area">
+                <form method="post">
+                    <label for="login">Login or mail</label>
+                    <input type="text" name="login">
+                    <label for="pswd">passwd</label>
+                    <input type="password" name="pswd">
+                    <a href="">Восстановить пароль</a>
+                    <button type="submit">Вход</button>
+
+                    {% if form.errors %}
+                    <p  style="color: red">Your username and password didn't match. Please try again.</p>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="new_user_area">
+                <form method="post">
+                    <label><i>Not account? Create new now!</i></label>
+                    <label for="login">Login</label>
+                    <input type="text" name="login">
+                    <label for="mail">e-mail</label>
+                    <input type="text" name="mail">
+                    <label for="pswd">passwd</label>
+                    <input type="password" name="pswd">
+                    <label for="pswd">repeat passwd</label>
+                    <input type="password" name="pswd">
+                    <div>
+                        <input type="checkbox">
+                        <span>Я принимаю <a href="#">лицензионное соглащение</a></span>
+                    </div>
+
+                    <button type="submit">Регистрация</button>
+                    <label style="color: red">New user error</label>
+                </form>
+            </div>
+        </div>
+{% endblock %}
+
 
 <form method="post" action="{% url 'login' %}">
 {% csrf_token %}

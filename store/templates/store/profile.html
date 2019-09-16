@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
 {% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/profile/style_profile.css' %}">{% endblock %}
-{% block title %} { Your profile } {% endblock %}
+{% block title %}Profile: {{ user.username }}{% endblock %}
 
 {% block main_content %}
         <div class="profile">
             <div class="user">
                 <img src="{% static 'store/image/profile/avatar.jpg' %}">
-                <p>login</p>
+                <p>{{ user.username }}</p>
+                <p>{{ user.email }}</p>
                 <button type="submit">Edit avatar</button>
             </div>
 
             <form method="post" class="edit_area">
-                <label for="new_mail">Edit data aabout your account</label>
+                <label for="new_mail">{{ user.email }}</label>
                 <label for="new_mail">New mail</label>
                 <input type="text" name="new_mail">
 
@@ -26,9 +27,12 @@
 
                 <button type="submit">Edit</button>
 
-                <label style="color: red">Error</label>
+                {% if error %}
+                    <p style="color: red">{{ error }}</p>
+                {% endif %}
             </form>
         </div>
+
         <h2>История покупок</h2>
         <div class="story_sales">
             <ul>

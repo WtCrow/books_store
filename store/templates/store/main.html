@@ -5,329 +5,53 @@
 {% block main_content %}
         <div class="main_content">
             <div class="scroll_panel">
-                <h2><a href="">Header 1</a></h2>
+                <h2><a href="{% url 'root_books' %}">Книги</a></h2>
                 <ul class="scroll_area">
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
+                    {% for book in books %}
+                    <a href="{{ book.get_absolute_url }}" title="{{ book.product.name }}"><li class="item">
+                        <img src="{% static book.product.picture_name.url %}">
+                        <div class="name_product">{{ book.product.name }}</div>
+                        <div class="author_product">
+                        {% for author in book.authors.all %}
+                            {{ author }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        </div>
                         <div class="buy_area">
-                            <span>3000 руб.</span>
+                            <span>{{ book.product.price|floatformat }} руб.</span>
                             <button>Купить</button>
                         </div>
                     </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="scroll_panel">
-                <h2><a href="">Header 1</a></h2>
+                <h2><a href="{% url 'root_stationery' %}">Канцелярские пренадлежности</a></h2>
                 <ul class="scroll_area">
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
+                    {% for st in stationery %}
+                    <a href="{{ st.get_absolute_url }}" title="{{ st.product.name }}"><li class="item">
+                        <img src="{% static st.product.picture_name.url %}">
+                        <div class="name_product">{{ st.product.name }}</div>
                         <div class="buy_area">
-                            <span>3000 руб.</span>
+                            <span>{{ st.product.price|floatformat }} руб.</span>
                             <button>Купить</button>
                         </div>
                     </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="scroll_panel">
-                <h2><a href="">Header 1</a></h2>
+                <h2><a href="{% url 'root_creations' %}">Творчество</a></h2>
                 <ul class="scroll_area">
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
+                    {% for creation in creations %}
+                    <a href="{{ creation.get_absolute_url }}" title="{{ creation.product.name }}"><li class="item">
+                        <img src="{% static creation.product.picture_name.url %}">
+                        <div class="name_product">{{ creation.product.name }}</div>
                         <div class="buy_area">
-                            <span>3000 руб.</span>
+                            <span>{{ creation.product.price|floatformat }} руб.</span>
                             <button>Купить</button>
                         </div>
                     </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                </ul>
-            </div>
-            <div class="scroll_panel">
-                <h2><a href="">Header 1</a></h2>
-                <ul class="scroll_area">
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
-                    <a href="#"><li class="item">
-                        <img src="product.jpg">
-                        <span calss="name_product">Name_product_very_very_long...</span>
-                        <span calss="author_product">Autor_product_very_very_long</span>
-                        <div class="buy_area">
-                            <span>3000 руб.</span>
-                            <button>Купить</button>
-                        </div>
-                    </li></a>
+                    {% endfor %}
                 </ul>
             </div>
         </div>

@@ -1,3 +1,7 @@
+:root {
+    --gutter: 20px;
+}
+
 h2 {
     padding: 1em;
 }
@@ -35,6 +39,12 @@ h2 {
 
 .product img {
     height: 250px;
+    width: 175px;
+}
+
+.name_product {
+    max-height: 2.4em;
+    overflow: hidden;
 }
 
 .buy_area {
@@ -44,17 +54,17 @@ h2 {
     justify-content: center;
 }
 
-.pages_numbers {
+.numbers_page {
 	display: flex;
 	justify-content: center;
 }
 
-.pages_numbers * {
+.numbers_page * {
 	padding: 1em;
 	border: 1px solid black;
 }
 
-.pages_numbers a:hover {
+.numbers_page a:hover {
     background-color: black;
 }
 

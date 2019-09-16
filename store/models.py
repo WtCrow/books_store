@@ -2,10 +2,12 @@ from django.db import models
 from datetime import datetime
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.shortcuts import reverse
 
 
 class Subcategory(models.Model):
     name = models.CharField(max_length=50, unique=True)
+    normalize_name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -35,12 +37,22 @@ class Book(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     authors = models.ManyToManyField(Author)
 
+    def get_absolute_url(self):
+        url = reverse('book_page', kwargs={'pk': self.id})
+        return url
+
     def __str__(self):
-        return f'{self.product}, {self.author}'
+        authors_models = [str(author) for author in self.authors.all()]
+        str_authors = ''.join(authors_models) if authors_models else ''
+        return f'{self.product}, {str_authors}'
 
 
 class Creation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        url = reverse('creations_page', kwargs={'pk': self.id})
+        return url
 
     def __str__(self):
         return self.product
@@ -48,6 +60,10 @@ class Creation(models.Model):
 
 class Stationery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        url = reverse('stationery_page', kwargs={'pk': self.id})
+        return url
 
     def __str__(self):
         return self.product
