@@ -1,72 +1,40 @@
 {% extends "base.html" %}
 {% load static %}
 {% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/basket/style_basket.css' %}">{% endblock %}
-{% block title %} { name_category } {% endblock %}
+{% block title %}Корзина{% endblock %}
 
 {% block main_content %}
         <div class="basket_page">
             <h2>Ваши товары</h2>
             <ul>
+                {% for product in products %}
                 <li>
                     <div class="product">
-                        <a href="#"><img src="product.jpg"></a>
-                        <a href="#">
+                        <a href="{{ product.link }}"><img src="{% static product.instance.picture_name.url %}"></a>
+                        <a href="{{ product.link }}">
                             <div class="info_product">
-                                <span calss="name_product">Name_product_very_very_long...</span>
-                                <span calss="author_product">Autor_product_very_very_long</span>
+                                <span class="name_product">{{ product.instance.name }}</span>
                             </div>
                         </a>
                         <div class="delete_area">
-                            <span>3000 руб.</span>
-                            <button>Удалить</button>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="product">
-                        <a href="#"><img src="product.jpg"></a>
-                        <a href="#">
-                            <div class="info_product">
-                                <span calss="name_product">Name_product_very_very_long...</span>
-                                <span calss="author_product">Autor_product_very_very_long</span>
-                            </div>
-                        </a>
-                        <div class="delete_area">
-                            <span>3000 руб.</span>
-                            <button>Удалить</button>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="product">
-                        <a href="#"><img src="product.jpg"></a>
-                        <a href="#">
-                            <div class="info_product">
-                                <span calss="name_product">Name_product_very_very_long...</span>
-                                <span calss="author_product">Autor_product_very_very_long</span>
-                            </div>
-                        </a>
-                        <div class="delete_area">
-                            <div class="flex_count_and_price">
-                                <span>3000 руб.</span>
-                                <span>Количество</span>
+                            <span>{{ product.instance.price|floatformat }} руб.</span>
+                            <span>Количество</span>
                                 <div class="count">
-                                    <a href="">-</a>
-                                    <span>2</span>
-                                    <a href="">+</a>
+                                    <a href="{% url 'sub_from_basket' product.instance.id %}">-</a>
+                                    <span>{{ product.count }}</span>
+                                    <a href="{% url 'add_in_basket' product.instance.id %}">+</a>
                                 </div>
-                            </div>
-                            <button>Удалить</button>
+                            <a href="{% url 'delete_from_basket' product.instance.id %}"><button>Удалить</button></a>
                         </div>
                     </div>
                 </li>
+                {% endfor %}
             </ul>
             <div class="total">
                 <div class="discription">
-                    <span>Всего товаров: 10</span>
-                    <span>К оплате: 50 000 руб.</span>
+                    <span>К оплате: {{ sum_price }} руб.</span>
                 </div>
-                <button type="submit">Оформить</button>
+                <a href="{% url 'buy_products' %}"><button type="submit">Оформить</button></a>
             </div>
         </div>
 {% endblock %}

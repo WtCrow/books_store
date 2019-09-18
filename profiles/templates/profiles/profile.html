@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'profiles/css/profile/style_profile.css' %}">{% endblock %}
+{% block title %}Profile: {{ user.username }}{% endblock %}
+
+{% block main_content %}
+        <div class="profile">
+            <div class="user">
+                <div class="user_info">
+                    <span>Логин: </span><span>{{ user.username }}</span>
+                    <span>e-mail: </span><span>{{ user.email }}</span>
+                </div>
+                <a href="#">История покупок</a>
+            </div>
+
+            <form method="post" class="edit_area">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.errors %}
+                    <span style="color: red; text-align: center;">{{ field.errors.0 }}</span>
+                    {% endif %}
+
+                    <span>{{ field.label }}</span>
+                    {{ field }}
+
+                {% endfor %}
+                <button type="submit">Edit</button>
+            </form>
+        </div>
+{% endblock %}

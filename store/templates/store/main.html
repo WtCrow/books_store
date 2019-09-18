@@ -18,7 +18,7 @@
                         </div>
                         <div class="buy_area">
                             <span>{{ book.product.price|floatformat }} руб.</span>
-                            <button>Купить</button>
+                            <button href="{% url 'add_in_basket' book.product.id %}">Купить</button>
                         </div>
                     </li></a>
                     {% endfor %}
@@ -33,7 +33,7 @@
                         <div class="name_product">{{ st.product.name }}</div>
                         <div class="buy_area">
                             <span>{{ st.product.price|floatformat }} руб.</span>
-                            <button>Купить</button>
+                            <button href="{% url 'add_in_basket' st.product.id %}">Купить</button>
                         </div>
                     </li></a>
                     {% endfor %}
@@ -48,7 +48,7 @@
                         <div class="name_product">{{ creation.product.name }}</div>
                         <div class="buy_area">
                             <span>{{ creation.product.price|floatformat }} руб.</span>
-                            <button>Купить</button>
+                            <button href="{% url 'add_in_basket' creation.product.id %}">Купить</button>
                         </div>
                     </li></a>
                     {% endfor %}

@@ -7,11 +7,7 @@ handler404 = 'store.views.custom_handler404'
 urlpatterns = [
     path('', index, name='index'),
 
-    path('products/search/', FindBook.as_view(), name='root_search'),
-    path('products/search/books', FindBook.as_view(), name='root_search'),
-    path('products/search/stationery', FindStationery.as_view(), name='root_search'),
-    path('products/search/creations', FindCreation.as_view(), name='root_search'),
-    path('products/search/<str:category>', custom_handler404, name='root_search'),
+    path('products/search/', Find.as_view(), name='search'),
 
     path('products/books/<str:subcategory>/', BookCategory.as_view(), name='root_books'),
     path('products/books/', BookCategory.as_view(), name='root_books'),
@@ -29,4 +25,9 @@ urlpatterns = [
     path('products/<str:category>/<str:subcategory>/', custom_handler404, name='root_category'),
     path('products/<str:category>/', custom_handler404, name='root_category'),
 
+    path('basket/', basket, name='basket'),
+    path('basket/add/<pk>/', add_in_basket, name='add_in_basket'),
+    path('basket/sub/<pk>/', sub_from_basket, name='sub_from_basket'),
+    path('basket/del/<pk>/', delete_from_basket, name='delete_from_basket'),
+    path('basket/buy/', buy_product, name='buy_products'),
 ]

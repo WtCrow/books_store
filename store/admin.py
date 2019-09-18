@@ -30,10 +30,15 @@ class OrderAdmin(admin.ModelAdmin):
     pass
 
 
-admin.register(Product, ProductAdmin)
-admin.register(Author, AuthorAdmin)
-admin.register(Book, BookAdmin)
-admin.register(Stationery, StationeryAdmin)
-admin.register(Creation, CreationAdmin)
-admin.register(BasketItem, BasketItemAdmin)
-admin.register(Order, OrderAdmin)
+class CountProductInOrderAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Product, ProductAdmin)
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(Book, BookAdmin)
+admin.site.register(Stationery, StationeryAdmin)
+admin.site.register(Creation, CreationAdmin)
+admin.site.register(BasketItem, BasketItemAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(CountProductInOrder, CountProductInOrderAdmin)

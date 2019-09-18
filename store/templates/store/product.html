@@ -20,7 +20,7 @@
             </article>
             <div class="buy_area">
                 <span>{{ object.product.price|floatformat }} руб.</span>
-                <button>Купить</button>
+                <a href="{% url 'add_in_basket' object.product.id %}"><button>Купить</button></a>
             </div>
         </div>
 {% endblock %}

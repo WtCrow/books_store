@@ -72,8 +72,7 @@ class Stationery(models.Model):
 class Order(models.Model):
     # TODO если создали ордер, уменьшить количество продуктов
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product)
-    count_product = models.IntegerField(validators=[MinValueValidator(0)], blank=False, default=0)
+    product = models.ManyToManyField(Product, through='CountProductInOrder')
     result_price = models.FloatField(validators=[MinValueValidator(0)], blank=False, default=0)
     date_pub = models.DateTimeField(default=datetime.now())
 
@@ -81,9 +80,16 @@ class Order(models.Model):
         return f'user: {self.user} product: {self.product} count: {self.count_product} price: {self.result_price}'
 
 
+class CountProductInOrder(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    count = models.IntegerField()
+
+
 class BasketItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.IntegerField()
 
     def __str__(self):
         return f'user: {self.user} product: {self.product}'

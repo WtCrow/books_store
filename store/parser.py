@@ -14,13 +14,13 @@ import shutil
 
 class ProductsParser:
 
-    def __init__(self, part_url, subcategory_name, class_model):
+    def __init__(self, part_url, subcategory_name, normalize_name, class_model):
         self.base_url = 'https://www.chitai-gorod.ru'
         self.part_url = part_url
         self.class_model = class_model
 
         if not Subcategory.objects.filter(name=subcategory_name):
-            self.subcategory = Subcategory.objects.create(name=subcategory_name)
+            self.subcategory = Subcategory.objects.create(name=subcategory_name, normalize_name=normalize_name)
         else:
             self.subcategory = Subcategory.objects.get(name=subcategory_name)
 
@@ -105,8 +105,8 @@ class ProductsParser:
 
 class BooksParser(ProductsParser):
 
-    def __init__(self, part_url, subcategory_name):
-        super().__init__(part_url, subcategory_name, Book)
+    def __init__(self, part_url, subcategory_name, normalize_name):
+        super().__init__(part_url, subcategory_name, normalize_name, Book)
 
     def parse(self, url):
         book = super().parse(url)
@@ -130,26 +130,30 @@ class BooksParser(ProductsParser):
 if __name__ == '__main__':
     # Books
     BooksParser(part_url='/catalog/books/programmirovaniye-9185/?page=',
-                subcategory_name='programming').parse_category()
+                subcategory_name='programming', normalize_name='Программирование').parse_category()
     BooksParser(part_url='/catalog/books/klassicheskaya_i_sovremennaya_proza-9665/?page=',
-                subcategory_name='fiction').parse_category()
+                subcategory_name='fiction', normalize_name='Художественная литература').parse_category()
     BooksParser(part_url='/catalog/books/delovaya_literatura-8979/?page=',
-                subcategory_name='business').parse_category()
+                subcategory_name='business', normalize_name='Деловая литература').parse_category()
 
     # Creation
     ProductsParser(part_url='/catalog/hobbies/dekorirovaniye-18242/?page=',
-                   subcategory_name='decoration', class_model=Creation).parse_category()
+                   subcategory_name='decoration', normalize_name='Декорирование',
+                   class_model=Creation).parse_category()
     ProductsParser(part_url='/catalog/hobbies/instrumenty_i_prisposobleniya-18218/?page=',
-                   subcategory_name='tool', class_model=Creation).parse_category()
+                   subcategory_name='tool', normalize_name='Инструменты и приспособления',
+                   class_model=Creation).parse_category()
     ProductsParser(part_url='/catalog/hobbies/raskhodnyye_materialy-18219/?page=',
-                   subcategory_name='consumables', class_model=Creation).parse_category()
+                   subcategory_name='consumables', normalize_name='Расходные материалы',
+                   class_model=Creation).parse_category()
 
     # Stationery
     ProductsParser(part_url='/catalog/kanctovars/bumazhnyye_izdeliya-2856/?page=',
-                   subcategory_name='paper', class_model=Stationery).parse_category()
+                   subcategory_name='paper', normalize_name='Бумажные изделия',
+                   class_model=Stationery).parse_category()
     ProductsParser(part_url='/catalog/kanctovars/pismennyye_prinadlezhnosti-2963/?page=',
-                   subcategory_name='writing', class_model=Stationery).parse_category()
-
+                   subcategory_name='writing', normalize_name='Письменные приналежности',
+                   class_model=Stationery).parse_category()
 
 """
 -- DELETE FROM store_book_authors;
@@ -164,7 +168,7 @@ ON store_product.subcategory_id = store_subcategory.id
 WHERE store_subcategory.name = 
 -- 'programming'
 -- 'fiction'
--- 'consumables'
+-- 'business'
 
 -- 'decoration'
 -- 'tool'

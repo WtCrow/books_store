@@ -50,7 +50,7 @@ nav {
 main {
     grid-column: 2/10;
     grid-auto-rows: minmax(100px, 200px);
-    min-height: 300px;
+    min-height: 350px;
 }
 
 footer {
@@ -164,7 +164,6 @@ form {
 .hover-menu li a {
     color: white;
     display: block;
-    font-family: Arial;
     font-size: 14pt;
     text-align: center;
     padding: 10px 20px 10px;

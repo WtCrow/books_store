@@ -1,14 +1,13 @@
-.auth_page {
+.reg_page {
 	display: flex;
 	justify-content: center;
-	align-content: center;
 }
 
-.auth_page form {
+.reg_page form {
 	display: grid;
 }
 
-.auth_page form * {
+.reg_page form * {
 	justify-self: center;
 	align-self: center;
 }
