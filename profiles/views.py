@@ -7,7 +7,7 @@ from django.contrib.auth import login, update_session_auth_hash
 class EditProfile(View):
 
     def get(self, request):
-        edit_form = UserEditForm()
+        edit_form = UserEditForm(request)
         return render(request, "profiles/profile.html", context={'form': edit_form})
 
     def post(self, request):

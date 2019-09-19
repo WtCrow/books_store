@@ -84,11 +84,13 @@ class UserEditForm(forms.ModelForm):
             'email': forms.EmailInput(),
         }
 
-    new_password = forms.CharField(max_length=32, widget=forms.PasswordInput(), label='Новый пароль')
-    repeat_new_password = forms.CharField(max_length=32, widget=forms.PasswordInput(), label='Повторите новый пароль')
+    new_password = forms.CharField(max_length=32, required=False, widget=forms.PasswordInput(), label='Новый пароль')
+    repeat_new_password = forms.CharField(max_length=32, required=False, widget=forms.PasswordInput(),
+                                          label='Повторите новый пароль')
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['email'].required = False
         self.user = user
 
     def clean_password(self):
@@ -101,6 +103,10 @@ class UserEditForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
+
+        if not email:
+            return email
+
         try:
             validate_email(email)
         except ValidationError:
@@ -114,20 +120,30 @@ class UserEditForm(forms.ModelForm):
 
     def clean_new_password(self):
         new_password = self.cleaned_data.get('new_password', '')
-        repeat_new_password = self.cleaned_data.get('repeat_new_password', '')
+
+        if not new_password:
+            return new_password
 
         new_password_len = len(new_password)
         if new_password_len < 6 or new_password_len > 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
-        elif new_password_len != repeat_new_password:
-            raise ValidationError('Новые пароли не совпадают')
 
         return new_password
+
+    def clean_repeat_new_password(self):
+        repeat_new_password = self.cleaned_data.get('repeat_new_password', '')
+        new_password = self.cleaned_data.get('new_password', '')
+
+        if new_password != repeat_new_password:
+            raise ValidationError(f'Новые пароли не совпадают {new_password} != {repeat_new_password}')
+
+        return repeat_new_password
 
     def save(self, commit=True):
         if self.cleaned_data["new_password"]:
             self.user.set_password(self.cleaned_data["new_password"])
-        if self.cleaned_data["new_password"]
+        if self.cleaned_data["email"]:
+            self.user.email = self.cleaned_data["email"]
 
         if commit:
             self.user.save()
