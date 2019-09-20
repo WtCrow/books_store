@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View, DetailView
 from django.shortcuts import redirect
-from django.db.models import F
+from django.db.models import F, aggregates, Sum, FloatField
 from .models import *
 from .utils import *
 
@@ -91,17 +91,23 @@ class Find(View, CategoryMixin):
         # get start-end interval for select from data base
         to, do = self._get_interval(page)
 
-        # get products and total count products
-        products_models = Product.objects\
-                                 .filter(Q(name__icontains=search_text)
-                                         | Q(description__icontains=search_text))\
-                                 .order_by('date_pub')[to:do]
+        # get specific products
+        # class_product_models - variable from store/util.py
+        products = []
+        for class_product_model in classes_product_models:
+            products += class_product_model.objects.all().select_related('product')\
+                                          .filter(Q(product__name__icontains=search_text)
+                                                  | Q(product__description__icontains=search_text))\
+                                          .order_by('product__date_pub')
+        products = products[to:do]
+
+        # get total count
         count = Product.objects\
                        .filter(Q(name__icontains=search_text)
                                | Q(description__icontains=search_text)).count()
 
         # get list numbers pages
-        numbers_pages = self._get_numbers_pages(page, count) if len(products_models) > 0 else []
+        numbers_pages = self._get_numbers_pages(page, count) if len(products) > 0 else []
 
         # generate url for switch between pages
         current_url = reverse('search') + f'?search={search_text}'
@@ -109,7 +115,7 @@ class Find(View, CategoryMixin):
         return render(request, self.template,
                       context={'title': title,
                                'total_count': count,
-                               'products': products_models,
+                               'products': products,
                                'numbers_pages': numbers_pages,
                                'current_page': page,
                                'current_url': current_url,
@@ -230,5 +236,40 @@ def buy_product(request):
 
 @login_required
 def story(request):
-    # TODO create page with story buys user
-    pass
+    """Handler for purchase story user
+
+    Show list orders with total price
+    and all products with link to product page
+
+    In context send list in format:
+    (('date': str, 'id': int, 'products': [...], 'total_price':float), ... )
+    'products' get format:
+    ({instance: ProductInOrder(), 'link': url}, ...)
+
+    """
+
+    orders = Order.objects.filter(user=request.user).order_by('-date_pub')
+
+    orders_info = list()
+    for order in orders:
+        products_in_order = ProductInOrder.objects.filter(order=order)
+        products = []
+        for product_in_order in products_in_order:
+            instance = product_in_order
+
+            specific_object = get_specific_object(product_in_order.product)
+            link = specific_object.get_absolute_url()
+
+            products.append({'instance': instance, 'link': link})
+
+        total_price = ProductInOrder.objects\
+            .filter(order=order)\
+            .aggregate(total_price=Sum(F('price') * F('count'), output_field=FloatField()))['total_price']
+        # if NoneType.
+        # In real work, order with 0 count product must not be, but if will appear (bug) then total_price = 0
+        if not total_price:
+            total_price = 0
+
+        orders_info.append({'date': order.date_pub, 'id': order.id, 'products': products, 'total_price': total_price})
+
+    return render(request, 'store/purchase_story.html', context={'orders': orders_info})

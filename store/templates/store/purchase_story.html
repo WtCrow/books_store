@@ -10,14 +10,16 @@
 
 <h2>История ваших покупок</h2>
 {% for order in orders %}
-<h3>Заказ номер {{ order.id }}</h3>
+<h3>Заказ номер {{ order.id }}. ({{ order.date }})</h3>
 <ul>
+    {% for product in order.products %}
     <li>
-        {% for product in order.products %}
-        <a href="{{ product.link }}">{{ product.instance.name }}</a>
-        <p>Количество: {{ product.instance.name }}</p>
-        {% endfor %}
-        <p>Итоговая цена: {{ order.total_price }}</p>
+        <a href="{{ product.link }}">{{ product.instance.product.name }}</a>
+        <p>Количество: {{ product.instance.count }}</p>
+    </li>
+    {% endfor %}
+    <li>
+    Итоговая цена: {{ order.total_price }}
     </li>
 </ul>
 {% endfor %}

@@ -2,6 +2,8 @@ from django.shortcuts import render, reverse, get_object_or_404
 from django.http import Http404
 from .models import Subcategory, Book, Stationery, Creation
 
+classes_product_models = [Book, Stationery, Creation]
+
 
 class CategoryMixin:
     """Show count_product_at_page products at page"""
@@ -156,9 +158,8 @@ def get_specific_object(product):
     TODO find best way
 
     """
-    class_product_models = [Book, Stationery, Creation]
 
-    for class_product_model in class_product_models:
+    for class_product_model in classes_product_models:
         obj_model = class_product_model.objects.filter(product=product)
         if obj_model:
             return obj_model[0]

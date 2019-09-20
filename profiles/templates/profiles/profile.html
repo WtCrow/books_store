@@ -10,7 +10,7 @@
                     <span>Логин: </span><span>{{ user.username }}</span>
                     <span>e-mail: </span><span>{{ user.email }}</span>
                 </div>
-                <a href="#">История покупок</a>
+                <a href="{% url 'story' %}">История покупок</a>
             </div>
 
             <form method="post" class="edit_area">
