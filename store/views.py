@@ -5,8 +5,6 @@ from django.db.models import F
 from .models import *
 from .utils import *
 
-class_product_models = [Book, Stationery, Creation]
-
 
 def index(request):
     """Renderer main page
@@ -80,7 +78,6 @@ class StationeryPage(DetailView):
 class Find(View, CategoryMixin):
     """Find in all products in fields name and description"""
 
-    # TODO: separate store/category.html at 2 templates
     def get(self, request, category=None):
         # validation page param
         page = request.GET.get('page', None)
@@ -154,7 +151,6 @@ def add_in_basket(request, pk):
 def sub_from_basket(request, pk):
     """Decrement count product in basket"""
     instance_model = get_object_or_404(Product, id=pk)
-    # TODO to think about change pk in link from product to basket item
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
     # change count if count > 1
     if basket_item:
@@ -171,7 +167,6 @@ def sub_from_basket(request, pk):
 def delete_from_basket(request, pk):
     """Delete product from basket"""
     instance_model = get_object_or_404(Product, id=pk)
-    # TODO to think about change pk in link from product to basket item
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
     if basket_item:
         basket_item[0].delete()
@@ -189,18 +184,18 @@ def basket(request):
     sum_price = sum([basket_item.product.price * basket_item.count for basket_item in basket_items])
 
     # get all specific product classes (Book, Creation ...) from user basket
-    # TODO find best way :|
     products_and_links = []
 
     for basket_item in basket_items:
-        for concreting_model in class_product_models:
-            concreting_model_instance = concreting_model.objects.filter(product=basket_item.product)
-            if concreting_model_instance:
-                products_and_links.append({'instance': basket_item.product,
-                                           'link': concreting_model_instance[0].get_absolute_url(),
-                                           'count': basket_item.count,
-                                           })
-                break
+        product = basket_item.product
+
+        specific_object = get_specific_object(product)
+        link = specific_object.get_absolute_url()
+
+        products_and_links.append({'instance': product,
+                                   'link': link,
+                                   'count': basket_item.count,
+                                   })
 
     return render(request, 'store/basket.html', context={'products': products_and_links,
                                                          'sum_price': sum_price,

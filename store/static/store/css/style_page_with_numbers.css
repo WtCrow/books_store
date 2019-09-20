@@ -1,0 +1,33 @@
+h2 {
+    padding: 1em;
+}
+
+.products {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 1em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+.products a:hover {
+    color: #ED6CB8
+}
+
+.numbers_page {
+	display: flex;
+	justify-content: center;
+}
+
+.numbers_page * {
+	padding: 1em;
+	border: 1px solid black;
+}
+
+.numbers_page a:hover {
+    background-color: black;
+}
+
+.current_page {
+	background-color: red;
+}

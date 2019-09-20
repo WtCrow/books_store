@@ -1,6 +1,6 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import Http404
-from .models import Subcategory
+from .models import Subcategory, Book, Stationery, Creation
 
 
 class CategoryMixin:
@@ -148,3 +148,17 @@ class CategoryMixin:
                                'current_url': current_url,
                                }
                       )
+
+
+def get_specific_object(product):
+    """Get object Product class and return object, which references at this product
+
+    TODO find best way
+
+    """
+    class_product_models = [Book, Stationery, Creation]
+
+    for class_product_model in class_product_models:
+        obj_model = class_product_model.objects.filter(product=product)
+        if obj_model:
+            return obj_model[0]

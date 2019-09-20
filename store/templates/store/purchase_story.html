@@ -1,0 +1,25 @@
+{% extends "store/page_with_numbers.html" %}
+{% load static %}
+
+{% block additional_styles %}
+{{ block.super }}
+<!--TODO create styles and set link-->
+{% endblock %}
+
+{% block content_at_page %}
+
+<h2>История ваших покупок</h2>
+{% for order in orders %}
+<h3>Заказ номер {{ order.id }}</h3>
+<ul>
+    <li>
+        {% for product in order.products %}
+        <a href="{{ product.link }}">{{ product.instance.name }}</a>
+        <p>Количество: {{ product.instance.name }}</p>
+        {% endfor %}
+        <p>Итоговая цена: {{ order.total_price }}</p>
+    </li>
+</ul>
+{% endfor %}
+
+{% endblock %}

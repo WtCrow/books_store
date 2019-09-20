@@ -1,10 +1,12 @@
-{% extends "base.html" %}
+{% extends "store/page_with_numbers.html" %}
 {% load static %}
-{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/category/style_category.css' %}">{% endblock %}
-{% block title %}{{ title }}{% endblock %}
 
-{% block main_content %}
-{{ debug }}
+{% block additional_styles %}
+{{ block.super }}
+<link type="text/css" rel="stylesheet" href="{% static 'store/css/style_category.css' %}">
+{% endblock %}
+
+{% block content_at_page %}
         <h2>{{ title }} {{ total_count }} товаров</h2>
         <div class="products">
             {% for product in products %}
@@ -20,14 +22,5 @@
                 </div>
             </div></a>
             {% endfor %}
-        </div>
-        <div class="numbers_page">
-        {% for page_number in numbers_pages %}
-            {% if page_number == current_page %}
-            <span class="current_page">{{ page_number }}</span>
-            {% else %}
-            <a href="{{ current_url }}&page={{ page_number }}">{{ page_number }}</a>
-            {% endif %}
-        {% endfor %}
         </div>
 {% endblock %}

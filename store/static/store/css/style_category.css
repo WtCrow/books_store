@@ -2,18 +2,6 @@
     --gutter: 20px;
 }
 
-h2 {
-    padding: 1em;
-}
-
-.products {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-gap: 1em;
-    margin-bottom: 1em;
-    margin-top: 1em;
-}
-
 .product {
     scroll-snap-align: center;
     padding: calc(var(--gutter) / 2 * 1.5);
@@ -26,10 +14,6 @@ h2 {
     overflow: hidden;
     border: 1px solid black;
     height: 400px;
-}
-
-.products a:hover {
-    color: #ED6CB8
 }
 
 .product * {
@@ -52,22 +36,4 @@ h2 {
     grid-template-columns: 1fr 1fr;
     align-items: center;
     justify-content: center;
-}
-
-.numbers_page {
-	display: flex;
-	justify-content: center;
-}
-
-.numbers_page * {
-	padding: 1em;
-	border: 1px solid black;
-}
-
-.numbers_page a:hover {
-    background-color: black;
-}
-
-.current_page {
-	background-color: red;
 }

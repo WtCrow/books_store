@@ -51,5 +51,4 @@ class Registration(View):
 
 
 def license_view(request):
-    """TODO: License. Come up with something more original"""
     return render(request, 'profiles/license.html', context={})
