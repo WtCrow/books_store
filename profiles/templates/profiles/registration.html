@@ -13,8 +13,15 @@
                         <span style="color: red; text-align: center;">{{ field.errors.0 }}</span>
                         {% endif %}
 
-                    <span>{{ field.label }}</span>
-                    {{ field }}
+                    {% if forloop.last %}
+                        <div class="license">
+                            {{ field }}
+                            <span>{{ field.label }}<a href="{% url 'license' %}"> лицензионное соглашение</a></span>
+                        </div>
+                    {% else %}
+                        <span>{{ field.label }}</span>
+                        {{ field }}
+                    {% endif %}
 
                     {% endfor %}
                     <button type="submit">Регистрация</button>

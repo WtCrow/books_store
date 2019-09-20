@@ -1,8 +1,10 @@
-from django.db import models
-from datetime import datetime
-from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.db.models import signals, Q
 from django.shortcuts import reverse
+from django.dispatch import receiver
+from django.conf import settings
+from datetime import datetime
+from django.db import models
 
 
 class Subcategory(models.Model):
@@ -70,20 +72,19 @@ class Stationery(models.Model):
 
 
 class Order(models.Model):
-    # TODO если создали ордер, уменьшить количество продуктов
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product, through='CountProductInOrder')
-    result_price = models.FloatField(validators=[MinValueValidator(0)], blank=False, default=0)
+    products = models.ManyToManyField(Product, through='ProductInOrder')
     date_pub = models.DateTimeField(default=datetime.now())
 
     def __str__(self):
-        return f'user: {self.user} product: {self.product} count: {self.count_product} price: {self.result_price}'
+        return f'user: {self.user} product: {self.products}'
 
 
-class CountProductInOrder(models.Model):
+class ProductInOrder(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     count = models.IntegerField()
+    price = models.FloatField(validators=[MinValueValidator(0)], blank=False, default=0)
 
 
 class BasketItem(models.Model):
@@ -93,3 +94,16 @@ class BasketItem(models.Model):
 
     def __str__(self):
         return f'user: {self.user} product: {self.product}'
+
+
+@receiver(signals.pre_save, sender=ProductInOrder)
+def change_count_in_stock(sender, instance, **kwargs):
+    instance.product.count_in_stock = instance.product.count_in_stock - instance.count
+    instance.product.save()
+
+    count_in_stock = instance.product.count_in_stock
+    if count_in_stock == 0:
+        BasketItem.objects.filter(product=instance.product).exclude(user=instance.order.user).delete()
+    else:
+        BasketItem.objects.filter(Q(product=instance.product) & Q(count__gt=count_in_stock))\
+            .exclude(user=instance.order.user).update(count=count_in_stock)

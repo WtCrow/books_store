@@ -22,6 +22,7 @@ class UserRegistrationForm(forms.ModelForm):
         }
 
     repeat_password = forms.CharField(max_length=32, widget=forms.PasswordInput(), label='Повторите пароль')
+    is_license = forms.BooleanField(label='Я принимаю')
 
     def clean_password(self):
         password = self.cleaned_data.get('password', '')
@@ -60,6 +61,14 @@ class UserRegistrationForm(forms.ModelForm):
             raise ValidationError('Данный логин занят, введите другой')
 
         return username
+
+    def clean_is_license(self):
+        is_license = self.cleaned_data.get('is_license', '')
+
+        if not is_license:
+            raise ValidationError('Примите лицензионное соглашение')
+
+        return is_license
 
     def save(self, commit=True):
         user = super().save(commit=False)

@@ -30,4 +30,6 @@ urlpatterns = [
     path('basket/sub/<pk>/', sub_from_basket, name='sub_from_basket'),
     path('basket/del/<pk>/', delete_from_basket, name='delete_from_basket'),
     path('basket/buy/', buy_product, name='buy_products'),
+
+    path('purchase_story/', custom_handler404, name='story'),
 ]

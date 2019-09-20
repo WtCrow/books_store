@@ -31,10 +31,12 @@
                 {% endfor %}
             </ul>
             <div class="total">
-                <div class="discription">
-                    <span>К оплате: {{ sum_price }} руб.</span>
-                </div>
+                {% if not products|length %}
+                    <span>Ваша корзина пуста :( <a href="{% url 'index' %}">Начать покупки!</a></span>
+                {% else %}
+                 <span>К оплате: {{ sum_price }} руб.</span>
                 <a href="{% url 'buy_products' %}"><button type="submit">Оформить</button></a>
+                {% endif %}
             </div>
         </div>
 {% endblock %}

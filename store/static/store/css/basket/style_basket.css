@@ -64,11 +64,6 @@ li {
     align-items: center;
 }
 
-.discription {
-    display: flex;
-    flex-direction: column;
-}
-
 .delete_area {
     display: flex;
 }

@@ -1,10 +1,11 @@
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from .forms import *
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, update_session_auth_hash
 
 
-class EditProfile(View):
+class EditProfile(LoginRequiredMixin, View):
 
     def get(self, request):
         edit_form = UserEditForm(request)
@@ -38,3 +39,7 @@ class Registration(View):
         login(request, user)
 
         return redirect('profile')
+
+
+def license_view(request):
+    return render(request, 'profiles/license.html', context={})
