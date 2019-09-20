@@ -5,13 +5,16 @@ from django.views.generic import View
 from .forms import *
 
 
-class EditProfile(LoginRequiredMixin, View):
+class Profile(LoginRequiredMixin, View):
+    """Handler for show profile information and edit password or email."""
 
     def get(self, request):
+        """GET request. Profile page"""
         edit_form = UserEditForm(request)
         return render(request, "profiles/profile.html", context={'form': edit_form})
 
     def post(self, request):
+        """POST request. Profile page"""
         form = UserEditForm(request.user, request.POST)
 
         if not form.is_valid():
@@ -26,10 +29,16 @@ class EditProfile(LoginRequiredMixin, View):
 class Registration(View):
 
     def get(self, request):
+        """GET request. Registration page"""
         edit_form = UserRegistrationForm()
         return render(request, "profiles/registration.html", context={'form': edit_form})
 
     def post(self, request):
+        """POST request. Registration page
+
+        Return error or register and login new user
+
+        """
         form = UserRegistrationForm(request.POST)
 
         if not form.is_valid():
@@ -42,4 +51,5 @@ class Registration(View):
 
 
 def license_view(request):
+    """TODO: License. Come up with something more original"""
     return render(request, 'profiles/license.html', context={})

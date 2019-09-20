@@ -114,6 +114,7 @@ class BooksParser(ProductsParser):
             return
         html = requests.get(url).text
 
+        # Parse authors
         soup = BeautifulSoup(html, 'html.parser')
         authors = soup.find("a", attrs={"class": "link product__author"}).contents
         authors = [str(author).strip() for author in authors]

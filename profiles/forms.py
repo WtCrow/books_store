@@ -5,6 +5,16 @@ from django.core.validators import validate_email
 
 
 class UserRegistrationForm(forms.ModelForm):
+    """Simple registration form
+
+    Use default user from django.auth.
+    fields:
+    login, email, password, repeat password and checkbox for license
+
+    Create new user or return error
+
+    """
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
@@ -79,6 +89,14 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class UserEditForm(forms.ModelForm):
+    """Form for edit some information about user
+
+    Field access for edit: email, password.
+    For edit information, need write old password.
+    User can edit password and email or only one parameter
+
+    """
+
     class Meta:
         model = User
         fields = ['password', 'email']
@@ -99,6 +117,7 @@ class UserEditForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # change required for model field
         self.fields['email'].required = False
         self.user = user
 

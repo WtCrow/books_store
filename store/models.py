@@ -8,6 +8,7 @@ from django.db import models
 
 
 class Subcategory(models.Model):
+    """Subcategory product (book->programming)"""
     name = models.CharField(max_length=50, unique=True)
     normalize_name = models.CharField(max_length=50, unique=True)
 
@@ -16,6 +17,7 @@ class Subcategory(models.Model):
 
 
 class Product(models.Model):
+    """Base class for products"""
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     description = models.TextField(blank=False)
     price = models.FloatField(validators=[MinValueValidator(0)])
@@ -81,6 +83,7 @@ class Order(models.Model):
 
 
 class ProductInOrder(models.Model):
+    """M2M class for Order and Product"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     count = models.IntegerField()
@@ -88,6 +91,7 @@ class ProductInOrder(models.Model):
 
 
 class BasketItem(models.Model):
+    """Current products some user"""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     count = models.IntegerField()
@@ -98,10 +102,17 @@ class BasketItem(models.Model):
 
 @receiver(signals.pre_save, sender=ProductInOrder)
 def change_count_in_stock(sender, instance, **kwargs):
+    """Change count products before add new ProductInOrder
+
+    Edit access count products in stock
+    and change count products in basket other people.
+
+    """
     instance.product.count_in_stock = instance.product.count_in_stock - instance.count
     instance.product.save()
 
     count_in_stock = instance.product.count_in_stock
+    # delete from basket or reduce count
     if count_in_stock == 0:
         BasketItem.objects.filter(product=instance.product).exclude(user=instance.order.user).delete()
     else:

@@ -4,6 +4,8 @@ from .models import Subcategory
 
 
 class CategoryMixin:
+    """Show count_product_at_page products at page"""
+
     class_model = None
     title_part = None
     category = None
@@ -22,9 +24,12 @@ class CategoryMixin:
         """
         numbers_pages = []
 
+        # pre
         if current_page > 1:
             numbers_pages.append(current_page - 1)
+        # current
         numbers_pages.append(current_page)
+        # next
         if total_products_count - current_page * self.count_product_at_page > 0:
             numbers_pages.append(current_page + 1)
 
@@ -32,17 +37,24 @@ class CategoryMixin:
 
     @staticmethod
     def _get_valid_page(page):
+        """validation GET-param page"""
         if page:
             if not page.isdigit():
                 raise Http404
-            else:
-                page = int(page)
-        else:
-            page = 1
-
-        return page
+            return int(page)
+        return 1
 
     def _get_products(self, to, do, subcategory=None):
+        """Return QuerySet with products
+
+        Return products to - do, which the order by date_pub
+        with taking into subcategory if != None
+
+        :param to: start index
+        :param do: end index
+        :param subcategory: subcategory field
+        :return: QuerySet
+        """
         if subcategory:
             products_models = self.class_model.objects.all() \
                                .select_related('product') \
@@ -59,6 +71,13 @@ class CategoryMixin:
         return products_models
 
     def _get_count_products(self, subcategory=None):
+        """Return QuerySet with products
+
+        Return total count products in data base, with taking into subcategory if != None
+
+        :param subcategory: subcategory field
+        :return: int
+        """
         if subcategory:
             count = self.class_model.objects.all() \
                 .select_related('product') \
@@ -75,25 +94,45 @@ class CategoryMixin:
         return count
 
     def _get_interval(self, page):
+        """Return start and end indexes for specific page
+
+        Return (to, do) which into page and count_product_at_page
+
+        :param page: current number page
+        :return: (to, do)
+        """
         to = (self.count_product_at_page * (page - 1))
         do = (self.count_product_at_page * (page - 1)) + self.count_product_at_page
         return to, do
 
     def get(self, request, subcategory=None):
+        """Mixin renderer store/category.html template for specific class model
+
+        In children class define class_model, which the get product field (class Product)
+        At html is displayed models
+
+        """
+        # validation page
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)
 
+        # generate title and define subcategory
         category_model = None
         if subcategory:
             category_model = get_object_or_404(Subcategory, name=subcategory)
         title = self.title_part if not subcategory else f'{self.title_part} ({category_model.normalize_name})'
 
+        # get interval start-end indexes for select data from data base
         to, do = self._get_interval(page)
+
+        # get objects models
         products_models = self._get_products(to, do, subcategory)
         count = self._get_count_products(subcategory)
 
+        # get list with numbers pages
         numbers_pages = self._get_numbers_pages(page, count) if len(products_models) > 0 else []
 
+        # generate url for switch between pages
         roots = dict()
         roots['category'] = self.category
         if subcategory:

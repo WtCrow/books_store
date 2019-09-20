@@ -9,6 +9,12 @@ class_product_models = [Book, Stationery, Creation]
 
 
 def index(request):
+    """Renderer main page
+
+    Show 3 scroll list various category products.
+    Sections contains last added objects in category
+
+    """
     books_models = Book.objects \
                        .select_related('product') \
                        .filter(product__count_in_stock__gt=0) \
@@ -27,77 +33,80 @@ def index(request):
 
 
 class BookCategory(View, CategoryMixin):
+    """Page with products from book category"""
+
     class_model = Book
     title_part = 'Книги'
     category = 'books'
 
 
 class CreationCategory(View, CategoryMixin):
+    """Page with products from creation category"""
+
     class_model = Creation
     title_part = 'Творчество'
     category = 'creations'
 
 
 class StationeryCategory(View, CategoryMixin):
+    """Page with products from stationery category"""
+
     class_model = Stationery
     title_part = 'Канецелярские товары'
     category = 'stationery'
 
 
 class BookPage(DetailView):
+    """Page with specific book category product"""
+
     model = Book
     template_name = 'store/product.html'
 
 
 class CreationPage(DetailView):
+    """Page with specific creation category product"""
+
     model = Creation
     template_name = 'store/product.html'
 
 
 class StationeryPage(DetailView):
+    """Page with specific stationery category product"""
+
     model = Stationery
     template_name = 'store/product.html'
 
 
 class Find(View, CategoryMixin):
-    @staticmethod
-    def _search_in_models(class_model, text):
-        finded_models = class_model.objects \
-                                   .select_related('product') \
-                                   .filter(Q(product__name__icontains=text)
-                                           | Q(product__description__icontains=text)
-                                           ).order_by('product__date_pub')
-        return finded_models
+    """Find in all products in fields name and description"""
 
-    @staticmethod
-    def _get_count_finded_models(class_model, text):
-        count_finded_models = class_model.objects \
-                                         .select_related('product') \
-                                         .filter(Q(product__name__icontains=text)
-                                                 | Q(product__description__icontains=text)
-                                                 ).count()
-        return count_finded_models
-
+    # TODO: separate store/category.html at 2 templates
     def get(self, request, category=None):
+        # validation page param
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)
 
+        # get search text
         search_text = request.GET.get('search', '')
 
         title = f'Поиск по запросу "{search_text}"'
 
+        # get start-end interval for select from data base
         to, do = self._get_interval(page)
-        products_models = []
-        count = 0
 
-        for model_for_search in class_product_models:
-            products_models += self._search_in_models(model_for_search, search_text)
-            count += self._get_count_finded_models(model_for_search, search_text)
+        # get products and total count products
+        products_models = Product.objects\
+                                 .filter(Q(name__icontains=search_text)
+                                         | Q(description__icontains=search_text))\
+                                 .order_by('date_pub')[to:do]
+        count = Product.objects\
+                       .filter(Q(name__icontains=search_text)
+                               | Q(description__icontains=search_text)).count()
 
-        products_models = products_models[to:do]
-
+        # get list numbers pages
         numbers_pages = self._get_numbers_pages(page, count) if len(products_models) > 0 else []
 
+        # generate url for switch between pages
         current_url = reverse('search') + f'?search={search_text}'
 
         return render(request, self.template,
@@ -119,12 +128,16 @@ def custom_handler404(request, *args, **kwargs):
 
 @login_required
 def add_in_basket(request, pk):
+    """Add new product or inc count exist product in basket"""
+    # validation pk
     if not pk.isdigit():
         raise Http404
     instance_product = get_object_or_404(Product, id=pk)
-    if instance_product.count_in_stock < 0:
+    # guard of request from url-panel
+    if instance_product.count_in_stock <= 0:
         raise Http404
 
+    # add new basket item or inc exist basket item
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_product))
     if basket_item:
         basket_item = basket_item[0]
@@ -139,8 +152,11 @@ def add_in_basket(request, pk):
 
 @login_required
 def sub_from_basket(request, pk):
+    """Decrement count product in basket"""
     instance_model = get_object_or_404(Product, id=pk)
+    # TODO to think about change pk in link from product to basket item
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
+    # change count if count > 1
     if basket_item:
         if basket_item[0].count <= 1:
             basket_item[0].delete()
@@ -153,7 +169,9 @@ def sub_from_basket(request, pk):
 
 @login_required
 def delete_from_basket(request, pk):
+    """Delete product from basket"""
     instance_model = get_object_or_404(Product, id=pk)
+    # TODO to think about change pk in link from product to basket item
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
     if basket_item:
         basket_item[0].delete()
@@ -163,10 +181,14 @@ def delete_from_basket(request, pk):
 
 @login_required
 def basket(request):
+    """Show all product from user basket"""
+    # get basket current user
     basket_items = BasketItem.objects.filter(user=request.user)
 
+    # calculate total price
     sum_price = sum([basket_item.product.price * basket_item.count for basket_item in basket_items])
 
+    # get all specific product classes (Book, Creation ...) from user basket
     # TODO find best way :|
     products_and_links = []
 
@@ -187,11 +209,20 @@ def basket(request):
 
 @login_required
 def buy_product(request):
+    """Handler for "buy" product.
+
+    Clear basket, add order and row in M2M table.
+    In background work signal.
+
+    """
+    # guard of request from url-panel
     basket_items = BasketItem.objects.filter(user=request.user)
     if not basket_items:
         redirect('index')
 
+    # create order
     order = Order.objects.create(user=request.user, date_pub=datetime.now())
+    # "add" products in custom M2M table ProductInOrder and set price and count values
     for basket_item in basket_items:
         ProductInOrder.objects.create(product=basket_item.product, order=order,
                                       count=basket_item.count,
@@ -204,4 +235,5 @@ def buy_product(request):
 
 @login_required
 def story(request):
+    # TODO create page with story buys user
     pass
