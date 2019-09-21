@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View, DetailView
 from django.shortcuts import redirect
-from django.db.models import F, aggregates, Sum, FloatField
+from django.db.models import F, Sum, FloatField
 from .models import *
 from .utils import *
 
@@ -219,7 +219,7 @@ def buy_product(request):
     # guard of request from url-panel
     basket_items = BasketItem.objects.filter(user=request.user)
     if not basket_items:
-        redirect('index')
+        return redirect('index')
 
     # create order
     order = Order.objects.create(user=request.user, date_pub=datetime.now())
@@ -231,7 +231,12 @@ def buy_product(request):
                                       )
         basket_item.delete()
 
-    return redirect('index')
+    message = 'Так как это только демонстрационный сайт, для того, чтобы показать мои навыки работы с Django, ' \
+              'работа с платежными API опущена. Вы можете увидеть, что история ваших покупок обновилась, а товара ' \
+              'стало меньше. Так же, если вы зарегистрировали 2 профиля и добавили 1 товар в корзину, корзина ' \
+              'другого профиля, могла измениться.'
+
+    return render(request, 'store/message.html', context={'message': message})
 
 
 @login_required
@@ -246,29 +251,30 @@ def story(request):
     'products' get format:
     ({instance: ProductInOrder(), 'link': url}, ...)
 
-    """
+    Perhaps a simpler option will be found in the future.
 
+    """
+    # get orders this user
     orders = Order.objects.filter(user=request.user).order_by('-date_pub')
 
     orders_info = list()
     for order in orders:
         products_in_order = ProductInOrder.objects.filter(order=order)
         products = []
+        # get information about ecah product in order
         for product_in_order in products_in_order:
             instance = product_in_order
 
+            # get link to product page
             specific_object = get_specific_object(product_in_order.product)
             link = specific_object.get_absolute_url()
 
             products.append({'instance': instance, 'link': link})
 
+        # calculate total price this order in one SQL query
         total_price = ProductInOrder.objects\
             .filter(order=order)\
             .aggregate(total_price=Sum(F('price') * F('count'), output_field=FloatField()))['total_price']
-        # if NoneType.
-        # In real work, order with 0 count product must not be, but if will appear (bug) then total_price = 0
-        if not total_price:
-            total_price = 0
 
         orders_info.append({'date': order.date_pub, 'id': order.id, 'products': products, 'total_price': total_price})
 

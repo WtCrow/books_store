@@ -22,3 +22,11 @@
 .input_area * {
 	margin: 5px;
 }
+
+.center_text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 350px;
+    font-size: 2em;
+}

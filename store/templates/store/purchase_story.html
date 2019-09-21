@@ -18,10 +18,8 @@
         <p>Количество: {{ product.instance.count }}</p>
     </li>
     {% endfor %}
-    <li>
-    Итоговая цена: {{ order.total_price }}
-    </li>
 </ul>
+<p>Итоговая цена: {{ order.total_price }}</p>
 {% endfor %}
 
 {% endblock %}
