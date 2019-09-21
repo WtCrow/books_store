@@ -13,7 +13,7 @@ class Subcategory(models.Model):
     normalize_name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.normalize_name
 
 
 class Product(models.Model):
