@@ -79,7 +79,7 @@ class Order(models.Model):
     date_pub = models.DateTimeField(default=datetime.now())
 
     def __str__(self):
-        return f'user: {self.user} product: {self.products}'
+        return f'user: {self.user} order_id: {self.id}'
 
 
 class ProductInOrder(models.Model):
@@ -88,6 +88,9 @@ class ProductInOrder(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     count = models.IntegerField()
     price = models.FloatField(validators=[MinValueValidator(0)], blank=False, default=0)
+
+    def __str__(self):
+        return f'Название: {self.product.name}; Количество: {self.count}; Цена за единицу: {self.price}'
 
 
 class BasketItem(models.Model):

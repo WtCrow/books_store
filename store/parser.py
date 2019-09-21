@@ -13,8 +13,15 @@ import shutil
 
 
 class ProductsParser:
+    """Class for parse name, price and description products"""
 
     def __init__(self, part_url, subcategory_name, normalize_name, class_model):
+        """
+        :param part_url: addition url for url site (url specific category)
+        :param subcategory_name: name subcategory, that use for url (save in model)
+        :param normalize_name: name subcategory, that use for user ui
+        :param class_model: class model specific product (Creation, stationery, book)
+        """
         self.base_url = 'https://www.chitai-gorod.ru'
         self.part_url = part_url
         self.class_model = class_model
@@ -26,15 +33,21 @@ class ProductsParser:
 
     @staticmethod
     def _get_products_links(url):
+        """Get all link from page category"""
+
         html = requests.get(url).text
         soup = BeautifulSoup(html, 'html.parser')
 
         tags_a = soup.find_all("a", attrs={"class": "product-card__img js-analytic-productlink"})
         hrefs = [tag_a.get('href') for tag_a in tags_a]
+        # reverse for to parse from old to new
+        hrefs.reverse()
 
         return hrefs
 
     def _get_base_product(self, html):
+        """Return object model Product if object not create, else return None"""
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # get name product
@@ -80,44 +93,56 @@ class ProductsParser:
 
         return product
 
-    def parse(self, url):
+    def parse_product_page(self, url):
+        """Parse product specific page"""
+
         html = requests.get(url).text
 
+        # get Product object
         new_product = self._get_base_product(html)
         if not new_product:
             return
+
         new_product.save()
 
+        # Create specific object with ref at created Product
         obj = self.class_model.objects.create(product=new_product)
 
         return obj
 
     def parse_category(self):
-        for i in range(1, 5):
+        """Parse first 4 page category"""
+
+        # to=4 do=-1 for to parse from old to new
+        for i in range(4, -1, -1):
             result_url = self.base_url + self.part_url + str(i)
 
             refs = self._get_products_links(result_url)
             refs = [self.base_url + ref for ref in refs]
 
+            # at one page 24 products
             with Pool(24) as p:
-                p.map(self.parse, refs)
+                p.map(self.parse_product_page, refs)
 
 
 class BooksParser(ProductsParser):
+    """Class for parse name, price, description and authors"""
 
     def __init__(self, part_url, subcategory_name, normalize_name):
         super().__init__(part_url, subcategory_name, normalize_name, Book)
 
-    def parse(self, url):
-        book = super().parse(url)
+    def parse_product_page(self, url):
+        book = super().parse_product_page(url)
         if not book:
             return
         html = requests.get(url).text
 
-        # Parse authors
+        # if created product parse authors
+        # max bad format 'author1, author2, author3 и др.'
         soup = BeautifulSoup(html, 'html.parser')
         authors = soup.find("a", attrs={"class": "link product__author"}).contents
-        authors = [str(author).strip() for author in authors]
+        authors.replace(' и др.')
+        authors = [str(author).strip(', ') for author in authors]
 
         for author in authors:
             if not Author.objects.filter(name=author):
