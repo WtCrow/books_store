@@ -16,7 +16,7 @@
 
                     <span><a href="{% url 'password_reset' %}">Забыли пароль?</a></span>
                     <span><a href="{% url 'registration' %}">Зарегистрироваться</a></span>
-                    <button type="submit" value="login">Вход</button>
+                    <button type="submit" value="login" id="id_login_button">Вход</button>
 
                     {% if form.errors %}
                     <span style="color: red; text-align: center;">Введен неверный логин или пароль.</span>

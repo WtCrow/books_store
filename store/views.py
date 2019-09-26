@@ -222,7 +222,7 @@ def buy_product(request):
         return redirect('index')
 
     # create order
-    order = Order.objects.create(user=request.user, date_pub=datetime.now())
+    order = Order.objects.create(user=request.user, date_pub=timezone.now())
     # "add" products in custom M2M table ProductInOrder and set price and count values
     for basket_item in basket_items:
         ProductInOrder.objects.create(product=basket_item.product, order=order,
@@ -231,10 +231,11 @@ def buy_product(request):
                                       )
         basket_item.delete()
 
-    message = 'Так как это только демонстрационный сайт, для того, чтобы показать мои навыки работы с Django, ' \
-              'работа с платежными API опущена. Вы можете увидеть, что история ваших покупок обновилась, а товара ' \
-              'стало меньше. Так же, если вы зарегистрировали 2 профиля и добавили 1 товар в корзину, корзина ' \
-              'другого профиля, могла измениться.'
+    message = """Так как это только демонстрационный сайт, для того, чтобы показать мои навыки работы с Django, 
+              работа с платежными API (и, наверное, API служб доставки) опущена. Вы можете увидеть, что история 
+              ваших покупок обновилась, а товара стало меньше. Так же, если вы зарегистрировали 2 профиля и 
+              добавили одинаковые товары в корзины, корзина другого профиля, могла измениться (товар может 
+              удалиться из корзины или его количество изменится (сигналы))."""
 
     return render(request, 'store/message.html', context={'message': message})
 

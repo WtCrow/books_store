@@ -10,17 +10,19 @@
         <h2>{{ title }} {{ total_count }} товаров</h2>
         <div class="products">
             {% for product in products %}
-            <a href="{{ product.get_absolute_url }}"><div class="product" title="{{ product.product.name }}">
+            <div class="product" title="{{ product.product.name }}">
+                <a href="{{ product.get_absolute_url }}"><div>
                 <img src="{% static product.product.picture_name.url %}">
-                <span class="name_product">{{ product.product.name }}</span>
+                <div class="name_product"><span>{{ product.product.name }}</span></div>
                 {% for author in product.authors.all %}
                 <span class="author_product">{{ author.name }}</span>{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+                {% endfor %}</div>
+                </a>
                 <div class="buy_area">
                     <span>{{ product.product.price|floatformat }} руб.</span>
-                    <button>Купить</button>
+                    <a href="{% url 'add_in_basket' product.id %}"><button class="buy_btn">Купить</button></a>
                 </div>
-            </div></a>
+            </div>
             {% endfor %}
         </div>
 {% endblock %}

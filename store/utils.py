@@ -1,8 +1,6 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import Http404
-from .models import Subcategory, Book, Stationery, Creation
-
-classes_product_models = [Book, Stationery, Creation]
+from .models import Subcategory, classes_product_models
 
 
 class CategoryMixin:
@@ -13,7 +11,7 @@ class CategoryMixin:
     category = None
 
     template = 'store/category.html'
-    count_product_at_page = 12
+    count_product_at_page = 15
 
     def _get_numbers_pages(self, current_page, total_products_count):
         """return list int with numbers pages
@@ -58,14 +56,14 @@ class CategoryMixin:
         :return: QuerySet
         """
         if subcategory:
-            products_models = self.class_model.objects.all() \
+            products_models = self.class_model.objects \
                                .select_related('product') \
                                .filter(product__count_in_stock__gt=0) \
                                .select_related('product__subcategory') \
                                .filter(product__subcategory__name=subcategory) \
                                .order_by('-product__date_pub')[to:do]
         else:
-            products_models = self.class_model.objects.all() \
+            products_models = self.class_model.objects \
                                .select_related('product') \
                                .filter(product__count_in_stock__gt=0) \
                                .order_by('-product__date_pub')[to:do]
@@ -81,14 +79,14 @@ class CategoryMixin:
         :return: int
         """
         if subcategory:
-            count = self.class_model.objects.all() \
+            count = self.class_model.objects \
                 .select_related('product') \
                 .filter(product__count_in_stock__gt=0) \
                 .select_related('-product__subcategory') \
                 .filter(product__subcategory__name=subcategory) \
                 .count()
         else:
-            count = self.class_model.objects.all() \
+            count = self.class_model.objects \
                 .select_related('product') \
                 .filter(product__count_in_stock__gt=0) \
                 .count()
@@ -153,7 +151,7 @@ class CategoryMixin:
 
 
 def get_specific_object(product):
-    """Get object Product class and return object, which references at this product
+    """Get specific Product class and return specific object
 
     TODO find best way
 

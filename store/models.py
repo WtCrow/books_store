@@ -3,8 +3,8 @@ from django.db.models import signals, Q
 from django.shortcuts import reverse
 from django.dispatch import receiver
 from django.conf import settings
-from datetime import datetime
 from django.db import models
+from django.utils import timezone
 
 
 class Subcategory(models.Model):
@@ -24,7 +24,7 @@ class Product(models.Model):
     name = models.CharField(max_length=300, unique=True)
     count_in_stock = models.IntegerField(validators=[MinValueValidator(0)])
     picture_name = models.FileField(blank=True)
-    date_pub = models.DateTimeField(default=datetime.now())
+    date_pub = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -76,7 +76,7 @@ class Stationery(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='ProductInOrder')
-    date_pub = models.DateTimeField(default=datetime.now())
+    date_pub = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'user: {self.user} order_id: {self.id}'
@@ -121,3 +121,6 @@ def change_count_in_stock(sender, instance, **kwargs):
     else:
         BasketItem.objects.filter(Q(product=instance.product) & Q(count__gt=count_in_stock))\
             .exclude(user=instance.order.user).update(count=count_in_stock)
+
+
+classes_product_models = [Book, Stationery, Creation]

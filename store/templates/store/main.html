@@ -8,19 +8,22 @@
                 <h2><a href="{% url 'root_books' %}">Книги</a></h2>
                 <ul class="scroll_area">
                     {% for book in books %}
-                    <a href="{{ book.get_absolute_url }}" title="{{ book.product.name }}"><li class="item">
+                    <li class="item">
+                        <a href="{{ book.get_absolute_url }}" title="{{ book.product.name }}">
                         <img src="{% static book.product.picture_name.url %}">
-                        <div class="name_product">{{ book.product.name }}</div>
+                        <div class="name_product"><span>{{ book.product.name }}</span></div>
                         <div class="author_product">
+                        <span>
                         {% for author in book.authors.all %}
                             {{ author }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
-                        </div>
+                        </span>
+                        </div></a>
                         <div class="buy_area">
                             <span>{{ book.product.price|floatformat }} руб.</span>
-                            <button href="{% url 'add_in_basket' book.product.id %}">Купить</button>
+                            <a href="{% url 'add_in_basket' book.product.id %}"><button class="buy_btn">Купить</button></a>
                         </div>
-                    </li></a>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -28,14 +31,16 @@
                 <h2><a href="{% url 'root_stationery' %}">Канцелярские пренадлежности</a></h2>
                 <ul class="scroll_area">
                     {% for st in stationery %}
-                    <a href="{{ st.get_absolute_url }}" title="{{ st.product.name }}"><li class="item">
-                        <img src="{% static st.product.picture_name.url %}">
-                        <div class="name_product">{{ st.product.name }}</div>
+                    <li class="item">
+                        <a href="{{ st.get_absolute_url }}" title="{{ st.product.name }}">
+                            <img src="{% static st.product.picture_name.url %}">
+                            <div class="name_product"><span>{{ st.product.name }}</span></div>
+                        </a>
                         <div class="buy_area">
                             <span>{{ st.product.price|floatformat }} руб.</span>
-                            <button href="{% url 'add_in_basket' st.product.id %}">Купить</button>
+                            <a href="{% url 'add_in_basket' st.product.id %}"><button class="buy_btn">Купить</button></a>
                         </div>
-                    </li></a>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -43,14 +48,16 @@
                 <h2><a href="{% url 'root_creations' %}">Творчество</a></h2>
                 <ul class="scroll_area">
                     {% for creation in creations %}
-                    <a href="{{ creation.get_absolute_url }}" title="{{ creation.product.name }}"><li class="item">
+                    <li class="item">
+                        <a href="{{ creation.get_absolute_url }}" title="{{ creation.product.name }}">
                         <img src="{% static creation.product.picture_name.url %}">
-                        <div class="name_product">{{ creation.product.name }}</div>
+                        <div class="name_product"><span>{{ creation.product.name }}</span></div>
+                        </a>
                         <div class="buy_area">
                             <span>{{ creation.product.price|floatformat }} руб.</span>
-                            <button href="{% url 'add_in_basket' creation.product.id %}">Купить</button>
+                            <a href="{% url 'add_in_basket' creation.product.id %}"><button class="buy_btn">Купить</button></a>
                         </div>
-                    </li></a>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>

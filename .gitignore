@@ -6,3 +6,5 @@ migrations/
 **/static/**/image/
 *.jpg
 *.png
+*.exe
+*.log
