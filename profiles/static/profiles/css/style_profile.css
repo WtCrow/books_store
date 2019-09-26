@@ -1,26 +1,11 @@
-h2 {
-	display: flex;
-	justify-content: center;
-}
-
-.story_sales li {
-	list-style: none;
-}
-
 .profile {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	align-content: center;
 }
 
-.profile img {
-	height: 300px;
-	max-width: 300px;
-}
-
 .profile >* {
 	margin: 1em;
-	border: 1px solid black;
 }
 
 .user {
@@ -28,11 +13,16 @@ h2 {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	background-color: #81BAF5;
+	border-radius: 5px;
+}
+
+.user a {
+	color: white;
 }
 
 .user * {
 	margin: 5px;
-
 }
 
 .user_info {
@@ -46,56 +36,29 @@ h2 {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	padding: 2em;
+	margin: 1em;
+    background-color: #81BAF5;
+	border-radius: 5px;
+	color: black;
+}
+
+.edit_area a {
+	color: black;
 }
 
 .edit_area * {
 	margin: 5px;
 }
 
-.story_sales {
-	padding: 1em;
-}
-
-.story_sales > ul {
-	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	grid-gap: 1em;
-}
-
-.story_sales > ul > li {
-	display: grid;
-    height: 200px;
-	align-self: center;
-	justify-self: center;
-}
-
-.story_sales img {
-	height: 100px;
-	align-self: center;
-	justify-self: center;
-}
-
-.product_info {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-}
-
-.pages_numbers {
-	display: flex;
-	justify-content: center;
-}
-
-.pages_numbers * {
-	padding: 1em;
-	border: 1px solid black;
-}
-
-.pages_numbers a:hover {
-    background-color: black;
-}
-
-.current_page {
-	background-color: red;
+.edit_area button {
+	border-radius: 5px;
+	background-color: white;
+    border: none;
+    cursor: pointer;
+    height: 1.5em;
+	color: black;
+  	font-size: 16px;
+  	border: none;
+  	min-width: 25%;
 }

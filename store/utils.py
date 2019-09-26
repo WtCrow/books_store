@@ -151,11 +151,7 @@ class CategoryMixin:
 
 
 def get_specific_object(product):
-    """Get specific Product class and return specific object
-
-    TODO find best way
-
-    """
+    """Get specific Product class and return specific object"""
 
     for class_product_model in classes_product_models:
         obj_model = class_product_model.objects.filter(product=product)

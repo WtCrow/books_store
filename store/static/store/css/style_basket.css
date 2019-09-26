@@ -1,3 +1,7 @@
+h2 {
+    padding: 15px;
+}
+
 ul {
     list-style: none;
 }
@@ -6,30 +10,24 @@ li {
     padding: 5px;
 }
 
-.products {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-gap: 1em;
-    margin-bottom: 1em;
-    margin-top: 1em;
-}
-
 .product {
-    scroll-snap-align: center;
-    padding: calc(var(--gutter) / 2 * 1.5);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 2.5fr 2.5fr;
     align-items: center;
     justify-content: center;
     grid-gap: 5px;
-    background: #456173;
-    border-radius: 8px;
+    background-color: #81BAF5;
+    border-radius: 5px;
     overflow: hidden;
-    border: 1px solid black;
 }
 
-.products a:hover {
-    color: #ED6CB8
+.product a {
+    color: black;
+    text-decoration: none;
+}
+
+.product a:hover {
+    color: white;
 }
 
 .product * {
@@ -38,8 +36,26 @@ li {
     padding: 5px;
 }
 
+.product button {
+}
+
+.product button {
+    border-radius: 5px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    height: 2em;
+    color: black;
+    font-size: 16px;
+    border: none;
+    min-width: 50%;
+    border: none;
+}
+
 .product img {
     height: 150px;
+    background-color: white;
+    border: 1px solid black;
 }
 
 .info_product {
@@ -47,28 +63,47 @@ li {
     flex-direction: column;
 }
 
-.buy_area {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-content: center;
+.change_count_area {
+    display: flex;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+    supported by Chrome, Opera and Firefox */
 }
 
-.total * {
-    padding: 5px;
+.change_count_area a {
+    text-decoration: none;
+}
+
+.change_count_area a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+.flex_count_and_price {
+    display: flex;
+    flex-direction: column;
 }
 
 .total {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
+    padding: 15px;
 }
 
-.delete_area {
-    display: flex;
-}
-
-.flex_count_and_price {
-    display: flex;
-    flex-direction: column;
+.total button {
+    border-radius: 5px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    height: 2em;
+    color: black;
+    font-size: 16px;
+    border: none;
+    min-width: 50%;
+    border: 1px solid gray;
 }

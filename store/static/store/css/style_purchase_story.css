@@ -1,0 +1,23 @@
+.order {
+    display: grid;
+    align-items: center;
+    grid-gap: 5px;
+    background-color: #81BAF5;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 1em;
+    margin: 1em;
+}
+
+.order li {
+	margin-left: 25px;
+}
+
+.product a {
+    color: black;
+    text-decoration: none;
+}
+
+.product a:hover {
+    color: white;
+}

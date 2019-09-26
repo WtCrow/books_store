@@ -3,14 +3,14 @@
 
 {% block additional_styles %}
 {{ block.super }}
-<link type="text/css" rel="stylesheet" href="{% static 'store/css/style_category.css' %}">
+<link type="text/css" rel="stylesheet" href="{% static 'store/css/style_card_product.css' %}">
 {% endblock %}
 
 {% block content_at_page %}
         <h2>{{ title }} {{ total_count }} товаров</h2>
         <div class="products">
             {% for product in products %}
-            <div class="product" title="{{ product.product.name }}">
+            <div class="item" title="{{ product.product.name }}">
                 <a href="{{ product.get_absolute_url }}"><div>
                 <img src="{% static product.product.picture_name.url %}">
                 <div class="name_product"><span>{{ product.product.name }}</span></div>

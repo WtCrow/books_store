@@ -3,23 +3,25 @@
 
 {% block additional_styles %}
 {{ block.super }}
-<!--TODO create styles and set link-->
+<link type="text/css" rel="stylesheet" href="{% static 'store/css/style_purchase_story.css' %}">
 {% endblock %}
 
 {% block content_at_page %}
 
 <h2>История ваших покупок</h2>
 {% for order in orders %}
-<h3>Заказ номер {{ order.id }}. ({{ order.date }})</h3>
-<ul>
-    {% for product in order.products %}
-    <li>
-        <a href="{{ product.link }}">{{ product.instance.product.name }}</a>
-        <p>Количество: {{ product.instance.count }}</p>
-    </li>
-    {% endfor %}
-</ul>
-<p>Итоговая цена: {{ order.total_price }}</p>
+<div class="order">
+    <h3>Заказ № {{ order.id }}. Дата заказа: {{ order.date }}.</h3>
+    <ul>
+        {% for product in order.products %}
+        <li class="product">
+            <a href="{{ product.link }}">{{ product.instance.product.name }}</a>
+            <p>Количество: {{ product.instance.count }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    <p>Итоговая цена: {{ order.total_price }}</p>
+</div>
 {% endfor %}
 
 {% endblock %}

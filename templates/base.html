@@ -13,7 +13,7 @@
 <body>
     <div class="login_menu">
         {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}">{{ user.username }}</a> <a href="{% url 'logout' %}?next=/">Выход</a>
+        <a href="{% url 'profile' %}">Профиль: {{ user.username }}</a> | <a href="{% url 'logout' %}?next=/">Выход</a>
         {% else %}
             <a href="{% url 'login' %}">Войти</a>
         {% endif %}
@@ -21,7 +21,7 @@
     <header>
         <div class="header_box">
             <div class="main_logo">
-                <a href="{% url 'index' %}"><img src="{% static 'image/logo.jpg' %}"></a>
+                <a href="{% url 'index' %}"><img src="{% static 'image/logo.png' %}"></a>
             </div>
             <form class="search_form" method="get" action="{% url 'search' %}">
                 {% csrf_token %}
@@ -29,12 +29,12 @@
                 <button type="submit"></button>
             </form>
             <div class="basket">
-                <a href="{% url 'basket' %}"><img src="{% static 'image/basket.jpg' %}"></a>
+                <a href="{% url 'basket' %}"><img src="{% static 'image/basket.png' %}"></a>
             </div>
         </div>
     </header>
     <nav>
-        <ul class="hover-menu">
+        <ul class="hover_menu">
             <li><a href="{% url 'root_books' %}">Книги</a>
                 <ul>
                     <li><a href="{% url 'root_books' 'programming' %}">Программирование</a></li>

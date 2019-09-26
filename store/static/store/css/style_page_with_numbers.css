@@ -1,5 +1,5 @@
 h2 {
-    padding: 1em;
+    padding: 15px;
 }
 
 .products {
@@ -17,17 +17,27 @@ h2 {
 .numbers_page {
 	display: flex;
 	justify-content: center;
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+    supported by Chrome, Opera and Firefox */
 }
 
 .numbers_page * {
 	padding: 1em;
-	border: 1px solid black;
+	border-radius: 5px;
+	margin: 3px;
+	text-decoration: none;
 }
 
 .numbers_page a:hover {
-    background-color: black;
+    background-color: #81BAF5;
+    color: white;
 }
 
 .current_page {
-	background-color: red;
+	background-color: #81BAF5;
 }
