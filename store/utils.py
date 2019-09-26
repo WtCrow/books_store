@@ -1,6 +1,6 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import Http404
 from .models import Subcategory, classes_product_models
+from django.http import Http404
 
 
 class CategoryMixin:

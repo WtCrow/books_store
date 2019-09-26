@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View, DetailView
-from django.shortcuts import redirect
 from django.db.models import F, Sum, FloatField
+from django.shortcuts import redirect
 from .models import *
 from .utils import *
 

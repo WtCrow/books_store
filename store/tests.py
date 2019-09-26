@@ -1,11 +1,10 @@
-from django.test import LiveServerTestCase
-from .models import *
 from selenium.webdriver.firefox.webdriver import WebDriver
-import time
-from unittest import skip
-from functools import partial
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.test import LiveServerTestCase
+from functools import partial
+from unittest import skip
+from .models import *
+import time
 
 User = get_user_model()
 BASKET_EMPTY_MESSAGE = 'Ваша корзина пуста'
