@@ -3,7 +3,7 @@ from .models import Subcategory, classes_product_models
 from django.http import Http404
 
 
-class BasePageWithNumbers:
+class BaseNumbersPage:
     count_product_at_page = None
 
     def _get_numbers_pages(self, current_page, total_products_count):
@@ -44,7 +44,7 @@ class BasePageWithNumbers:
         return to, do
 
 
-class CategoryMixin(BasePageWithNumbers):
+class CategoryMixin(BaseNumbersPage):
     """Show count_product_at_page products at page"""
 
     class_model = None

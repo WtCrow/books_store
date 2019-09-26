@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView
 from django.db.models import F, Sum, FloatField
 from django.shortcuts import redirect
@@ -30,7 +31,7 @@ def index(request):
                                                        'creations': creations_models})
 
 
-class BookCategory(View, CategoryMixin):
+class BookCategory(CategoryMixin, View):
     """Page with products from book category"""
 
     class_model = Book
@@ -38,7 +39,7 @@ class BookCategory(View, CategoryMixin):
     category = 'books'
 
 
-class CreationCategory(View, CategoryMixin):
+class CreationCategory(CategoryMixin, View):
     """Page with products from creation category"""
 
     class_model = Creation
@@ -46,7 +47,7 @@ class CreationCategory(View, CategoryMixin):
     category = 'creations'
 
 
-class StationeryCategory(View, CategoryMixin):
+class StationeryCategory(CategoryMixin, View):
     """Page with products from stationery category"""
 
     class_model = Stationery
@@ -75,7 +76,7 @@ class StationeryPage(DetailView):
     template_name = 'store/product.html'
 
 
-class Find(View, BasePageWithNumbers):
+class Find(BaseNumbersPage, View):
     """Find in all products in fields name and description"""
     template = 'store/category.html'
     count_product_at_page = 15
@@ -242,43 +243,72 @@ def buy_product(request):
     return render(request, 'store/message.html', context={'message': message})
 
 
-@login_required
-def story(request):
-    """Handler for purchase story user
+class StoryPurchase(LoginRequiredMixin, BaseNumbersPage, View):
+    template = 'store/purchase_story.html'
+    count_product_at_page = 15
 
-    Show list orders with total price
-    and all products with link to product page
+    def get(self, request):
+        """Handler for purchase story user
 
-    In context send list in format:
-    (('date': str, 'id': int, 'products': [...], 'total_price':float), ... )
-    'products' get format:
-    ({instance: ProductInOrder(), 'link': url}, ...)
+        Show list orders with total price
+        and all products with link to product page
 
-    Perhaps a simpler option will be found in the future.
+        In context send next information:
+        orders: (('date': str, 'id': int, 'products': [...], 'total_price':float), ... )
+            'products' get format: ({instance: ProductInOrder(), 'link': url}, ...)
+        numbers_pages: int
+        current_page: int
+        current_url: str (url for buttons that change current number page)
+        count: int (total count orders this user)
 
-    """
-    # get orders this user
-    orders = Order.objects.filter(user=request.user).order_by('-date_pub')
+        """
+        # validation page param
+        page = request.GET.get('page', None)
+        page = self._get_valid_page(page)
 
-    orders_info = list()
-    for order in orders:
-        products_in_order = ProductInOrder.objects.filter(order=order)
-        products = []
-        # get information about ecah product in order
-        for product_in_order in products_in_order:
-            instance = product_in_order
+        # get start-end interval for select from data base
+        to, do = self._get_interval(page)
 
-            # get link to product page
-            specific_object = get_specific_object(product_in_order.product)
-            link = specific_object.get_absolute_url()
+        # get orders and count orders this user
+        orders = Order.objects.filter(user=request.user).order_by('-date_pub')[to:do]
+        count = Order.objects.filter(user=request.user).count()
 
-            products.append({'instance': instance, 'link': link})
+        # press data about order in list
+        orders_info = list()
+        for order in orders:
 
-        # calculate total price this order in one SQL query
-        total_price = ProductInOrder.objects\
-            .filter(order=order)\
-            .aggregate(total_price=Sum(F('price') * F('count'), output_field=FloatField()))['total_price']
+            # get information about each product in current order
+            products_in_order = ProductInOrder.objects.filter(order=order)
+            products = []
+            for product_in_order in products_in_order:
+                instance = product_in_order
 
-        orders_info.append({'date': order.date_pub, 'id': order.id, 'products': products, 'total_price': total_price})
+                # get link to product page
+                specific_object = get_specific_object(product_in_order.product)
+                link = specific_object.get_absolute_url()
 
-    return render(request, 'store/purchase_story.html', context={'orders': orders_info})
+                # ProductInOrder() and url to page this product
+                products.append({'instance': instance, 'link': link})
+
+            # calculate total price this order in one SQL query
+            total_price = ProductInOrder.objects\
+                .filter(order=order)\
+                .aggregate(total_price=Sum(F('price') * F('count'), output_field=FloatField()))['total_price']
+
+            orders_info.append({'date': order.date_pub, 'id': order.id, 'products': products,
+                                'total_price': total_price})
+
+        # line for change current page
+        numbers_pages = self._get_numbers_pages(page, count) if len(orders) > 0 else []
+
+        # url for buttons that change current number page
+        current_url = '%s?' % reverse('story')
+
+        return render(request, self.template,
+                      context={'orders': orders_info,
+                               'numbers_pages': numbers_pages,
+                               'current_page': page,
+                               'current_url': current_url,
+                               'count': count,
+                               }
+                      )
