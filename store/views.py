@@ -75,10 +75,12 @@ class StationeryPage(DetailView):
     template_name = 'store/product.html'
 
 
-class Find(View, CategoryMixin):
+class Find(View, BasePageWithNumbers):
     """Find in all products in fields name and description"""
+    template = 'store/category.html'
+    count_product_at_page = 15
 
-    def get(self, request, category=None):
+    def get(self, request):
         # validation page param
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)

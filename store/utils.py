@@ -3,15 +3,8 @@ from .models import Subcategory, classes_product_models
 from django.http import Http404
 
 
-class CategoryMixin:
-    """Show count_product_at_page products at page"""
-
-    class_model = None
-    title_part = None
-    category = None
-
-    template = 'store/category.html'
-    count_product_at_page = 15
+class BasePageWithNumbers:
+    count_product_at_page = None
 
     def _get_numbers_pages(self, current_page, total_products_count):
         """return list int with numbers pages
@@ -43,6 +36,23 @@ class CategoryMixin:
                 raise Http404
             return int(page)
         return 1
+
+    def _get_interval(self, page):
+        """Return start and end indexes for models depending on the page"""
+        to = (self.count_product_at_page * (page - 1))
+        do = (self.count_product_at_page * (page - 1)) + self.count_product_at_page
+        return to, do
+
+
+class CategoryMixin(BasePageWithNumbers):
+    """Show count_product_at_page products at page"""
+
+    class_model = None
+    title_part = None
+    category = None
+
+    template = 'store/category.html'
+    count_product_at_page = 15
 
     def _get_products(self, to, do, subcategory=None):
         """Return QuerySet with products
@@ -92,18 +102,6 @@ class CategoryMixin:
                 .count()
 
         return count
-
-    def _get_interval(self, page):
-        """Return start and end indexes for specific page
-
-        Return (to, do) which into page and count_product_at_page
-
-        :param page: current number page
-        :return: (to, do)
-        """
-        to = (self.count_product_at_page * (page - 1))
-        do = (self.count_product_at_page * (page - 1)) + self.count_product_at_page
-        return to, do
 
     def get(self, request, subcategory=None):
         """Mixin renderer store/category.html template for specific class model
