@@ -2,8 +2,6 @@ from django.urls import path
 from .views import *
 
 
-handler404 = 'store.views.custom_handler404'
-
 urlpatterns = [
     path('', index, name='index'),
 

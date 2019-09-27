@@ -4,12 +4,12 @@ from django.http import Http404
 
 
 class BaseNumbersPage:
-    count_product_at_page = None
+    count_items_at_page = None
 
     def _get_numbers_pages(self, current_page, total_products_count):
-        """return list int with numbers pages
+        """Return list int with numbers pages
 
-        ['current', 'next'] | ['pre', 'current', 'next'] | ['pre', 'current'],
+        ['current_num', 'next_num'] | ['pre_num', 'current_num', 'next_num'] | ['pre_num', 'current_num'],
 
         :param current_page: current page
         :param total_products_count: count all products in DB for this category
@@ -23,7 +23,7 @@ class BaseNumbersPage:
         # current
         numbers_pages.append(current_page)
         # next
-        if total_products_count - current_page * self.count_product_at_page > 0:
+        if total_products_count - current_page * self.count_items_at_page > 0:
             numbers_pages.append(current_page + 1)
 
         return numbers_pages
@@ -38,27 +38,27 @@ class BaseNumbersPage:
         return 1
 
     def _get_interval(self, page):
-        """Return start and end indexes for models depending on the page"""
-        to = (self.count_product_at_page * (page - 1))
-        do = (self.count_product_at_page * (page - 1)) + self.count_product_at_page
+        """Return start and end indexes for models depending on this page"""
+        to = (self.count_items_at_page * (page - 1))
+        do = (self.count_items_at_page * (page - 1)) + self.count_items_at_page
         return to, do
 
 
 class CategoryMixin(BaseNumbersPage):
-    """Show count_product_at_page products at page"""
+    """Show products specific category with line for switch pages"""
 
     class_model = None
-    title_part = None
+    part_title = None
     category = None
 
     template = 'store/category.html'
-    count_product_at_page = 15
+    count_items_at_page = 15
 
     def _get_products(self, to, do, subcategory=None):
         """Return QuerySet with products
 
-        Return products to - do, which the order by date_pub
-        with taking into subcategory if != None
+        Return products in range to-do, which the order by date_pub
+        with taking into subcategory if subcategory != None
 
         :param to: start index
         :param do: end index
@@ -83,7 +83,7 @@ class CategoryMixin(BaseNumbersPage):
     def _get_count_products(self, subcategory=None):
         """Return QuerySet with products
 
-        Return total count products in data base, with taking into subcategory if != None
+        Return total count products in data base, with taking into subcategory if subcategory != None
 
         :param subcategory: subcategory field
         :return: int
@@ -106,22 +106,22 @@ class CategoryMixin(BaseNumbersPage):
     def get(self, request, subcategory=None):
         """Mixin renderer store/category.html template for specific class model
 
-        In children class define class_model, which the get product field (class Product)
-        At html is displayed models
+        In children class define class_model, which the get product field
+        At html is displayed models with line for switch pages
 
         """
         # validation page
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)
 
+        # get interval start-end indexes for select data from data base
+        to, do = self._get_interval(page)
+
         # generate title and define subcategory
         category_model = None
         if subcategory:
             category_model = get_object_or_404(Subcategory, name=subcategory)
-        title = self.title_part if not subcategory else f'{self.title_part} ({category_model.normalize_name})'
-
-        # get interval start-end indexes for select data from data base
-        to, do = self._get_interval(page)
+        title = self.part_title if not subcategory else f'{self.part_title} ({category_model.normalize_name})'
 
         # get objects models
         products_models = self._get_products(to, do, subcategory)
@@ -135,7 +135,7 @@ class CategoryMixin(BaseNumbersPage):
         roots['category'] = self.category
         if subcategory:
             roots['subcategory'] = subcategory
-        current_url = reverse('root_category', kwargs=roots) + '?'
+        current_url = '%s?page=' % reverse('root_category', kwargs=roots)
 
         return render(request, self.template,
                       context={'title': title,

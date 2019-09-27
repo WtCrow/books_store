@@ -10,7 +10,7 @@
             {% if page_number == current_page %}
             <span class="current_page">{{ page_number }}</span>
             {% else %}
-            <a class="page_num" href="{{ current_url }}&page={{ page_number }}">{{ page_number }}</a>
+            <a class="page_num" href="{{ current_url }}{{ page_number }}">{{ page_number }}</a>
             {% endif %}
         {% endfor %}
         </div>

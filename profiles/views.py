@@ -6,7 +6,7 @@ from .forms import *
 
 
 class Profile(LoginRequiredMixin, View):
-    """Handler for show profile information and edit password or email."""
+    """Handler for show profile information and edit password and/or email."""
 
     def get(self, request):
         """GET request. Profile page"""

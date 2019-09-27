@@ -8,7 +8,7 @@
 {% block main_content %}
         <div class="main_content">
             <div class="scroll_panel">
-                <h2><a href="{% url 'root_books' %}">Книги</a></h2>
+                <h2><a href="{% url 'root_books' %}">Новинки: книги</a></h2>
                 <ul class="scroll_area">
                     {% for book in books %}
                     <li class="item">
@@ -31,7 +31,7 @@
                 </ul>
             </div>
             <div class="scroll_panel">
-                <h2><a href="{% url 'root_stationery' %}">Канцелярские пренадлежности</a></h2>
+                <h2><a href="{% url 'root_stationery' %}">Новинки: канцелярские пренадлежности</a></h2>
                 <ul class="scroll_area">
                     {% for st in stationery %}
                     <li class="item">
@@ -48,7 +48,7 @@
                 </ul>
             </div>
             <div class="scroll_panel">
-                <h2><a href="{% url 'root_creations' %}">Творчество</a></h2>
+                <h2><a href="{% url 'root_creations' %}">Новинки: творчество</a></h2>
                 <ul class="scroll_area">
                     {% for creation in creations %}
                     <li class="item">

@@ -108,7 +108,7 @@ def change_count_in_stock(sender, instance, **kwargs):
     """Change count products before add new ProductInOrder
 
     Edit access count products in stock
-    and change count products in basket other people.
+    and change count products in basket other users.
 
     """
     instance.product.count_in_stock = instance.product.count_in_stock - instance.count

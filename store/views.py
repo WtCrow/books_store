@@ -7,6 +7,12 @@ from .models import *
 from .utils import *
 
 
+def custom_handler404(request, *args, **kwargs):
+    code = '404'
+    message = '404 запрашиваемый ресурс не найден'
+    return render(request, 'store/message.html', context={'message': message, 'code': code})
+
+
 def index(request):
     """Renderer main page
 
@@ -35,7 +41,7 @@ class BookCategory(CategoryMixin, View):
     """Page with products from book category"""
 
     class_model = Book
-    title_part = 'Книги'
+    part_title = 'Книги'
     category = 'books'
 
 
@@ -43,7 +49,7 @@ class CreationCategory(CategoryMixin, View):
     """Page with products from creation category"""
 
     class_model = Creation
-    title_part = 'Творчество'
+    part_title = 'Творчество'
     category = 'creations'
 
 
@@ -51,7 +57,7 @@ class StationeryCategory(CategoryMixin, View):
     """Page with products from stationery category"""
 
     class_model = Stationery
-    title_part = 'Канецелярские товары'
+    part_title = 'Канецелярские товары'
     category = 'stationery'
 
 
@@ -77,25 +83,24 @@ class StationeryPage(DetailView):
 
 
 class Find(BaseNumbersPage, View):
-    """Find in all products in fields name and description"""
+    """Find text in all products in fields name and description"""
     template = 'store/category.html'
-    count_product_at_page = 15
+    count_items_at_page = 15
 
     def get(self, request):
-        # validation page param
+        # validation page GET-param
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)
+
+        # get start-end interval for select from data base
+        to, do = self._get_interval(page)
 
         # get search text
         search_text = request.GET.get('search', '')
 
         title = f'Поиск по запросу "{search_text}"'
 
-        # get start-end interval for select from data base
-        to, do = self._get_interval(page)
-
-        # get specific products
-        # class_product_models - variable from store/util.py
+        # class_product_models - variable from store/models.py
         products = []
         for class_product_model in classes_product_models:
             products += class_product_model.objects.all().select_related('product')\
@@ -113,7 +118,7 @@ class Find(BaseNumbersPage, View):
         numbers_pages = self._get_numbers_pages(page, count) if len(products) > 0 else []
 
         # generate url for switch between pages
-        current_url = reverse('search') + f'?search={search_text}'
+        current_url = reverse('search') + f'?search={search_text}&page='
 
         return render(request, self.template,
                       context={'title': title,
@@ -126,12 +131,6 @@ class Find(BaseNumbersPage, View):
                       )
 
 
-def custom_handler404(request, *args, **kwargs):
-    code = '404'
-    message = '404 запрашиваемый ресурс не найден'
-    return render(request, 'store/message.html', context={'message': message, 'code': code})
-
-
 @login_required
 def add_in_basket(request, pk):
     """Add new product or inc count exist product in basket"""
@@ -139,7 +138,7 @@ def add_in_basket(request, pk):
     if not pk.isdigit():
         raise Http404
     instance_product = get_object_or_404(Product, id=pk)
-    # guard of request from url-panel
+    # guard of bad request from url-panel
     if instance_product.count_in_stock <= 0:
         raise Http404
 
@@ -158,10 +157,13 @@ def add_in_basket(request, pk):
 
 @login_required
 def sub_from_basket(request, pk):
-    """Decrement count product in basket"""
-    instance_model = get_object_or_404(Product, id=pk)
-    basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
-    # change count if count > 1
+    """Decrement count or delete product in basket"""
+    # validation pk
+    if not pk.isdigit():
+        raise Http404
+    product = get_object_or_404(Product, id=pk)
+    basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=product))
+
     if basket_item:
         if basket_item[0].count <= 1:
             basket_item[0].delete()
@@ -175,6 +177,9 @@ def sub_from_basket(request, pk):
 @login_required
 def delete_from_basket(request, pk):
     """Delete product from basket"""
+    # validation pk
+    if not pk.isdigit():
+        raise Http404
     instance_model = get_object_or_404(Product, id=pk)
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
     if basket_item:
@@ -186,12 +191,16 @@ def delete_from_basket(request, pk):
 @login_required
 def basket(request):
     """Show all product from user basket"""
+
+    # calculate total price in one SQL query
+    sum_price = BasketItem.objects \
+                          .select_related('product') \
+                          .filter(user=request.user) \
+                          .aggregate(sum_price=Sum(F('product__price') * F('count'),
+                                                   output_field=FloatField()))['sum_price']
+
     # get basket current user
     basket_items = BasketItem.objects.filter(user=request.user)
-
-    # calculate total price
-    sum_price = sum([basket_item.product.price * basket_item.count for basket_item in basket_items])
-
     # get all specific product classes (Book, Creation ...) from user basket
     products_and_links = []
 
@@ -215,18 +224,18 @@ def basket(request):
 def buy_product(request):
     """Handler for "buy" product.
 
-    Clear basket, add order and row in M2M table.
-    In background work signal.
+    Clear basket, create Order and some ProductInOrder (M2M table).
+    (In background work signal -> store/models.py change_count_in_stock)
 
     """
-    # guard of request from url-panel
     basket_items = BasketItem.objects.filter(user=request.user)
+    # guard of bad request from url-panel
     if not basket_items:
         return redirect('index')
 
     # create order
     order = Order.objects.create(user=request.user, date_pub=timezone.now())
-    # "add" products in custom M2M table ProductInOrder and set price and count values
+    # add products in custom M2M table ProductInOrder
     for basket_item in basket_items:
         ProductInOrder.objects.create(product=basket_item.product, order=order,
                                       count=basket_item.count,
@@ -237,15 +246,14 @@ def buy_product(request):
     message = """Так как это только демонстрационный сайт, для того, чтобы показать мои навыки работы с Django, 
               работа с платежными API (и, наверное, API служб доставки) опущена. Вы можете увидеть, что история 
               ваших покупок обновилась, а товара стало меньше. Так же, если вы зарегистрировали 2 профиля и 
-              добавили одинаковые товары в корзины, корзина другого профиля, могла измениться (товар может 
-              удалиться из корзины или его количество изменится (сигналы))."""
+              добавили одинаковые товары в корзины, корзина другого профиля, могла измениться."""
 
     return render(request, 'store/message.html', context={'message': message})
 
 
 class StoryPurchase(LoginRequiredMixin, BaseNumbersPage, View):
     template = 'store/purchase_story.html'
-    count_product_at_page = 15
+    count_items_at_page = 15
 
     def get(self, request):
         """Handler for purchase story user
@@ -254,15 +262,20 @@ class StoryPurchase(LoginRequiredMixin, BaseNumbersPage, View):
         and all products with link to product page
 
         In context send next information:
-        orders: (('date': str, 'id': int, 'products': [...], 'total_price':float), ... )
-            'products' get format: ({instance: ProductInOrder(), 'link': url}, ...)
+        orders: (
+                    ('date': str,
+                     'id': int,
+                     'products': ({instance: ProductInOrder(), 'link': url}, ...),
+                     'total_price':float
+                    ), ...
+                )
         numbers_pages: int
         current_page: int
         current_url: str (url for buttons that change current number page)
         count: int (total count orders this user)
 
         """
-        # validation page param
+        # validation GET-page param
         page = request.GET.get('page', None)
         page = self._get_valid_page(page)
 
@@ -273,10 +286,9 @@ class StoryPurchase(LoginRequiredMixin, BaseNumbersPage, View):
         orders = Order.objects.filter(user=request.user).order_by('-date_pub')[to:do]
         count = Order.objects.filter(user=request.user).count()
 
-        # press data about order in list
+        # press data about order
         orders_info = list()
         for order in orders:
-
             # get information about each product in current order
             products_in_order = ProductInOrder.objects.filter(order=order)
             products = []
@@ -302,7 +314,7 @@ class StoryPurchase(LoginRequiredMixin, BaseNumbersPage, View):
         numbers_pages = self._get_numbers_pages(page, count) if len(orders) > 0 else []
 
         # url for buttons that change current number page
-        current_url = '%s?' % reverse('story')
+        current_url = '%s?page=' % reverse('story')
 
         return render(request, self.template,
                       context={'orders': orders_info,

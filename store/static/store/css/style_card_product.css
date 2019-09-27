@@ -27,11 +27,13 @@
 
 .name_product {
     max-height: 2.4em;
+    max-width: 180px;
     overflow: hidden;
 }
 
 .author_product {
     max-height: 2.4em;
+    max-width: 180px;
     overflow: hidden;
 }
 

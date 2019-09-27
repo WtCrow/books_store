@@ -11,7 +11,7 @@ class UserRegistrationForm(forms.ModelForm):
     fields:
     login, email, password, repeat password and checkbox for license
 
-    Create new user or return error
+    Create new user or return errors form
 
     """
 
@@ -36,15 +36,21 @@ class UserRegistrationForm(forms.ModelForm):
 
     def clean_password(self):
         password = self.cleaned_data.get('password', '')
-        repeat_password = self.cleaned_data.get('password', '')
 
         pass_len = len(password)
         if pass_len < 6 or pass_len > 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
-        elif password != repeat_password:
-            raise ValidationError('Введенные пароли не совпадают.')
 
         return password
+
+    def clean_repeat_password(self):
+        password = self.cleaned_data.get('password', '')
+        repeat_password = self.cleaned_data.get('repeat_password', '')
+
+        if repeat_password != password:
+            raise ValidationError('Введенные пароли не совпадают.')
+
+        return repeat_password
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
@@ -148,9 +154,13 @@ class UserEditForm(forms.ModelForm):
 
     def clean_new_password(self):
         new_password = self.cleaned_data.get('new_password', '')
+        repeat_new_password = self.cleaned_data.get('repeat_new_password', '')
 
+        # if new password write in only one field, raise
         if not new_password:
-            return new_password
+            if not repeat_new_password:
+                return new_password
+            raise ValidationError('Повторите пароль')
 
         new_password_len = len(new_password)
         if new_password_len < 6 or new_password_len > 32:
@@ -163,7 +173,7 @@ class UserEditForm(forms.ModelForm):
         new_password = self.cleaned_data.get('new_password', '')
 
         if new_password != repeat_new_password:
-            raise ValidationError(f'Новые пароли не совпадают {new_password} != {repeat_new_password}')
+            raise ValidationError('Новые пароли не совпадают')
 
         return repeat_new_password
 
