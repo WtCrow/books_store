@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'hqqi-20sddfpy!n-*1x1dme4!9h4+!#45_uhcdajqq7pl*n%1h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -79,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'books_store',
-        'USER': 'postgres',
-        'PASSWORD': 'passwd123',
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'babenko.denis3009@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
