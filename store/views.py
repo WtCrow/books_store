@@ -106,7 +106,7 @@ class Find(BaseNumbersPage, View):
             products += class_product_model.objects.all().select_related('product')\
                                           .filter(Q(product__name__icontains=search_text)
                                                   | Q(product__description__icontains=search_text))\
-                                          .order_by('product__date_pub')
+                                          .order_by('-product__date_pub')
         products = products[to:do]
 
         # get total count

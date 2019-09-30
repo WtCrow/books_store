@@ -9,8 +9,8 @@ from django.db import models
 
 class Subcategory(models.Model):
     """Subcategory product (book->programming)"""
-    name = models.CharField(max_length=50, unique=True)
-    normalize_name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, db_index=True)
+    normalize_name = models.CharField(max_length=50, unique=True, db_index=True)
 
     def __str__(self):
         return self.normalize_name
@@ -21,7 +21,7 @@ class Product(models.Model):
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     description = models.TextField(blank=False)
     price = models.FloatField(validators=[MinValueValidator(0)])
-    name = models.CharField(max_length=300, unique=True)
+    name = models.CharField(max_length=300, unique=True, db_index=True)
     count_in_stock = models.IntegerField(validators=[MinValueValidator(0)])
     picture_name = models.FileField(blank=True)
     date_pub = models.DateTimeField(default=timezone.now)
@@ -31,7 +31,7 @@ class Product(models.Model):
 
 
 class Author(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, db_index=True)
 
     def __str__(self):
         return self.name

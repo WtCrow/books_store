@@ -141,8 +141,10 @@ class BooksParser(ProductsParser):
         # max bad format 'author1, author2, author3 и др.'
         soup = BeautifulSoup(html, 'html.parser')
         authors = soup.find("a", attrs={"class": "link product__author"}).contents
-        authors.replace(' и др.')
-        authors = [str(author).strip(', ') for author in authors]
+        authors = str(authors[0])
+        authors = authors.replace(' и др.', '')
+        authors = authors.strip()
+        authors = [author for author in authors.split(', ')]
 
         for author in authors:
             if not Author.objects.filter(name=author):
@@ -180,27 +182,3 @@ if __name__ == '__main__':
     ProductsParser(part_url='/catalog/kanctovars/pismennyye_prinadlezhnosti-2963/?page=',
                    subcategory_name='writing', normalize_name='Письменные приналежности',
                    class_model=Stationery).parse_category()
-
-"""
--- DELETE FROM store_book_authors;
--- DELETE FROM store_author;
--- DELETE FROM store_book;
--- DELETE FROM store_product;
--- DELETE FROM store_subcategory;
-
-SELECT *
-FROM store_product INNER JOIN store_subcategory
-ON store_product.subcategory_id = store_subcategory.id
-WHERE store_subcategory.name = 
--- 'programming'
--- 'fiction'
--- 'business'
-
--- 'decoration'
--- 'tool'
--- 'consumables'
-
--- 'paper'
--- 'writing'
-
-"""

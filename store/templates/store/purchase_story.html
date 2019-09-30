@@ -8,7 +8,7 @@
 
 {% block content_at_page %}
 
-<h2>История ваших покупок. За все время вы сделали {{ count }} заказов.</h2>
+<h2>История ваших покупок. Заказов за все время: {{ count }}.</h2>
 {% for order in orders %}
 <div class="order">
     <h3>Заказ № {{ order.id }}. Дата заказа: {{ order.date }}.</h3>
