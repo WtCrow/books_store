@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static '/css/style_auth.css' %}">{% endblock %}
+{% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'css/style_auth.css' %}">{% endblock %}
 {% block title %}Вход{% endblock %}
 
 {% block main_content %}
@@ -19,7 +19,7 @@
                     <button type="submit" value="login" id="id_login_button">Вход</button>
 
                     {% if form.errors %}
-                    <span style="color: red; text-align: center;">Введен неверный логин или пароль.</span>
+                    <span style="color: #8749BC; text-align: center;">Введен неверный логин или пароль.</span>
                     {% endif %}
                 </form>
             </div>

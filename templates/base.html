@@ -3,11 +3,10 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
-          rel="stylesheet"  type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"
+          type='text/css'>
     <link rel="stylesheet"  type='text/css' href="{% static 'css/style.css' %}">
     {% block additional_styles %}{% endblock %}
-    {% block base_url %}<base href = "http://127.0.0.1:8000/store" />{% endblock %}
     <title>{% block title %} Books store {% endblock %}</title>
 </head>
 <body>
@@ -51,7 +50,7 @@
             <li><a href="{% url 'root_creations' %}">Творчество</a>
                 <ul>
                     <li><a href="{% url 'root_creations' 'tool' %}">Инструменты и приспосабления</a></li>
-                    <li><a href="{% url 'root_creations' 'decoration' %}">Декарирование</a></li>
+                    <li><a href="{% url 'root_creations' 'decoration' %}">Декорирование</a></li>
                     <li><a href="{% url 'root_creations' 'consumables' %}">Расходные материалы</a></li>
                 </ul>
             </li>
@@ -71,7 +70,8 @@
                 Исходный код вы можете найти по <a href="https://github.com/WtCrow/books_store" target="_blank">этой ссылке</a>.<br />
                 Заполнение сайта любезно предоставлено магазином
                 <a href="https://chitai-gorod.ru" target="_blank">Читай город</a>,
-                простенький парсер так же прилагается к исходному коду.
+                простенький парсер так же прилагается к исходному коду.<br />
+                Моё <a href="https://resume.io/r/6gpSY4LLT" target="_blank">резюме тут</a>.
             </div>
         </div>
     </footer>

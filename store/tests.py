@@ -14,10 +14,6 @@ class TestShading:
     """Class for block starting base classes"""
 
     class BaseTest(LiveServerTestCase):
-        # TODO why template url reverse ({% url %}) use url 127.0.0.1:8000, but test server use localhost{free_port}?
-        port = 8000
-        host = '127.0.0.1'
-
         url_login = 'login'
         is_start_selenium = True
 
@@ -35,7 +31,6 @@ class TestShading:
             super(TestShading.BaseTest, cls).tearDownClass()
 
         def setUp(self):
-            # TODO learn why not working setUpTestData
             # test user
             self.username = 'tester'
             self.email = 'test@tst.tst'

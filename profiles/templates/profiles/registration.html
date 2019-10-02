@@ -10,7 +10,7 @@
                     {% csrf_token %}
                     {% for field in form %}
                         {% if field.errors %}
-                        <span style="color: red; text-align: center;">{{ field.errors.0 }}</span>
+                        <span style="color: #8749BC; text-align: center;">{{ field.errors.0 }}</span>
                         {% endif %}
 
                     {% if forloop.last %}
