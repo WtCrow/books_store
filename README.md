@@ -4,9 +4,9 @@ You can see result to this url: https://simple-books-store.herokuapp.com/
 
 If you want start this project local:
 
-1) `cd /project/path`
-2) `pip install -r requirements.txt`
-3) define next env variables ('`export var=val`' for linux, '`set var=val`' for windows):
+1) Enter in cmd: `cd /project/path`
+2) Enter in cmd: `pip install -r requirements.txt`
+3) Define next env variables ('`export var=val`' for linux, '`set var=val`' for windows):
 SECRET_KEY, DB_ENGINE, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, EMAIL, EMAIL_PASSWORD
 4) Create migration: `python manage.py makemigrations store`
 5) Applying migrations: `python manage.py migrate`
