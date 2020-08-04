@@ -1,11 +1,11 @@
-from django import forms
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.contrib.auth.models import User
+from django import forms
 
 
 class UserRegistrationForm(forms.ModelForm):
-    """Simple registration form
+    """Registration form
 
     Use default user from django.auth.
     fields:
@@ -37,8 +37,7 @@ class UserRegistrationForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get('password', '')
 
-        pass_len = len(password)
-        if pass_len < 6 or pass_len > 32:
+        if not 6 < len(password) < 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
 
         return password
@@ -59,9 +58,8 @@ class UserRegistrationForm(forms.ModelForm):
         except ValidationError:
             raise ValidationError('Введен некорректный e-mail.')
 
-        user = User.objects.filter(email=email)
-        if user:
-            raise ValidationError('Данный email занят, введите другой или воспользуйтесь сбросом пароля')
+        if User.objects.filter(email=email):
+            raise ValidationError('Данный email занят, введите другой или воспользуйтесь сбросом пароля.')
 
         return email
 
@@ -72,9 +70,8 @@ class UserRegistrationForm(forms.ModelForm):
         if username_len < 4 or username_len > 150:
             raise ValidationError('Логин должен содержать от 4 до 150 символов.')
 
-        user = User.objects.filter(username=username)
-        if user:
-            raise ValidationError('Данный логин занят, введите другой')
+        if User.objects.filter(username=username):
+            raise ValidationError('Данный логин занят, введите другой.')
 
         return username
 
@@ -82,7 +79,7 @@ class UserRegistrationForm(forms.ModelForm):
         is_license = self.cleaned_data.get('is_license', '')
 
         if not is_license:
-            raise ValidationError('Примите лицензионное соглашение')
+            raise ValidationError('Примите лицензионное соглашение.')
 
         return is_license
 
@@ -95,13 +92,7 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class UserEditForm(forms.ModelForm):
-    """Form for edit some information about user
-
-    Field access for edit: email, password.
-    For edit information, need write old password.
-    User can edit password and email or only one parameter
-
-    """
+    """Form for edit email and/or password. For edit information, need write current password."""
 
     class Meta:
         model = User
@@ -131,7 +122,7 @@ class UserEditForm(forms.ModelForm):
         password = self.cleaned_data.get('password', '')
 
         if not self.user.check_password(password):
-            raise ValidationError('Старый пароль не верен')
+            raise ValidationError('Старый пароль не верен.')
 
         return password
 
@@ -146,9 +137,8 @@ class UserEditForm(forms.ModelForm):
         except ValidationError:
             raise ValidationError('Введен некорректный e-mail.')
 
-        user = User.objects.filter(email=email)
-        if user:
-            raise ValidationError('Данный email занят, введите другой или воспользуйтесь сбросом пароля')
+        if User.objects.filter(email=email):
+            raise ValidationError('Данный email занят, введите другой или воспользуйтесь сбросом пароля.')
 
         return email
 
@@ -156,14 +146,13 @@ class UserEditForm(forms.ModelForm):
         new_password = self.cleaned_data.get('new_password', '')
         repeat_new_password = self.cleaned_data.get('repeat_new_password', '')
 
-        # if new password write in only one field, raise
-        if not new_password:
-            if not repeat_new_password:
-                return new_password
-            raise ValidationError('Повторите пароль')
+        if not (new_password and repeat_new_password):
+            return new_password
 
-        new_password_len = len(new_password)
-        if new_password_len < 6 or new_password_len > 32:
+        if (not new_password and repeat_new_password) or (new_password and not repeat_new_password):
+            raise ValidationError('Повторите новый пароль.')
+
+        if not 6 < len(new_password) < 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
 
         return new_password

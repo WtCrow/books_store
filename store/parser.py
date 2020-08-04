@@ -1,3 +1,5 @@
+"""Parser for site chitai-gorod.ru"""
+
 import os
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "books_store.settings")

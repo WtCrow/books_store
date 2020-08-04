@@ -18,7 +18,7 @@ class Subcategory(models.Model):
 
 class Product(models.Model):
     """Base class for products"""
-    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='product')
     description = models.TextField(blank=False)
     price = models.FloatField(validators=[MinValueValidator(0)])
     name = models.CharField(max_length=300, unique=True, db_index=True)
@@ -38,24 +38,23 @@ class Author(models.Model):
 
 
 class Book(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='book')
     authors = models.ManyToManyField(Author)
 
     def get_absolute_url(self):
-        url = reverse('book_page', kwargs={'pk': self.id})
+        url = reverse('book_page', kwargs={'pk': self.pk})
         return url
 
     def __str__(self):
-        authors_models = [str(author) for author in self.authors.all()]
-        str_authors = ''.join(authors_models) if authors_models else ''
-        return f'{self.product}, {str_authors}'
+        authors = ', '.join([str(author) for author in self.authors.all()])
+        return f'{self.product}, {authors}'
 
 
 class Creation(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='creation')
 
     def get_absolute_url(self):
-        url = reverse('creations_page', kwargs={'pk': self.id})
+        url = reverse('creations_page', kwargs={'pk': self.pk})
         return url
 
     def __str__(self):
@@ -63,10 +62,10 @@ class Creation(models.Model):
 
 
 class Stationery(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stationery')
 
     def get_absolute_url(self):
-        url = reverse('stationery_page', kwargs={'pk': self.id})
+        url = reverse('stationery_page', kwargs={'pk': self.pk})
         return url
 
     def __str__(self):
@@ -74,18 +73,24 @@ class Stationery(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    """Paid order"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order')
     products = models.ManyToManyField(Product, through='ProductInOrder')
     date_pub = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f'user: {self.user} order_id: {self.id}'
+        orders = ', '.join([str(author) for author in self.products.all()])
+        return f'user: {self.user} order_id: {self.pk} orders: {orders}'
 
 
 class ProductInOrder(models.Model):
-    """M2M class for Order and Product"""
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    """M2M class for Order and Product
+
+    Use custom model for add count and price fields
+
+    """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_query_name='product_in_order')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_query_name='product_in_order')
     count = models.IntegerField()
     price = models.FloatField(validators=[MinValueValidator(0)], blank=False, default=0)
 
@@ -94,9 +99,9 @@ class ProductInOrder(models.Model):
 
 
 class BasketItem(models.Model):
-    """Current products some user"""
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    """Current product some user"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_query_name='basket_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_query_name='basket_items')
     count = models.IntegerField()
 
     def __str__(self):

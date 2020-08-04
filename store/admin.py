@@ -13,18 +13,18 @@ class AuthorAdmin(admin.ModelAdmin):
 
 
 class BookAdmin(admin.ModelAdmin):
-    search_fields = ('product', )
+    search_fields = ('product__name', )
     list_display = ('product', )
     filter_horizontal = ('authors', )
 
 
 class StationeryAdmin(admin.ModelAdmin):
-    search_fields = ('product', )
+    search_fields = ('product__name', )
     list_display = ('product', )
 
 
 class CreationAdmin(admin.ModelAdmin):
-    search_fields = ('product', )
+    search_fields = ('product__name', )
     list_display = ('product', )
 
 
@@ -48,12 +48,12 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class ProductInOrderAdmin(admin.ModelAdmin):
-    search_fields = ('product', 'order', )
+    search_fields = ('product__name', 'order', )
     list_display = ('product', 'order', 'count', 'price')
 
 
 class BasketItemAdmin(admin.ModelAdmin):
-    search_fields = ('user', 'product', )
+    search_fields = ('user', 'product__name', )
     list_display = ('user', 'product', 'count')
 
 
