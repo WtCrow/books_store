@@ -121,11 +121,8 @@ def basket(request):
     """Show all product from user basket"""
 
     # calculate total price in one SQL query
-    sum_price = BasketItem.objects \
-                          .select_related('product') \
-                          .filter(user=request.user) \
-                          .aggregate(sum_price=Sum(F('product__price') * F('count'),
-                                                   output_field=FloatField()))['sum_price']
+    sum_price = BasketItem.objects.filter(user=request.user)\
+        .aggregate(sum_price=Sum(F('product__price') * F('count'), output_field=FloatField()))['sum_price']
 
     # get basket current user
     basket_items = BasketItem.objects.filter(user=request.user)

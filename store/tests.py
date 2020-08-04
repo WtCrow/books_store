@@ -1,9 +1,11 @@
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
 from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase
+from books_store.settings import BASE_DIR
+from selenium import webdriver
 from functools import partial
+from store.models import *
 from unittest import skip
-from .models import *
 import time
 
 User = get_user_model()
@@ -11,7 +13,7 @@ BASKET_EMPTY_MESSAGE = 'Ваша корзина пуста'
 
 
 class TestShading:
-    """Class for block starting base classes"""
+    """Class for stop testing base-classes"""
 
     class BaseTest(LiveServerTestCase):
         url_login = 'login'
@@ -21,8 +23,11 @@ class TestShading:
         def setUpClass(cls):
             super(TestShading.BaseTest, cls).setUpClass()
             if cls.is_start_selenium:
-                cls.selenium = WebDriver()
-                cls.selenium.implicitly_wait(10)
+                options = Options()
+                options.headless = True
+
+                cls.selenium = webdriver.Firefox(options=options, executable_path=f'{BASE_DIR}/geckodriver')
+                cls.selenium.implicitly_wait(1)
 
         @classmethod
         def tearDownClass(cls):
@@ -35,12 +40,10 @@ class TestShading:
             self.username = 'tester'
             self.email = 'test@tst.tst'
             self.password = '123456'
-            self.user = User.objects.create_user(
-                username=self.username, email=self.email, password=self.password)
+            self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
 
             # test products
-            test_subcategory = Subcategory.objects \
-                .create(name='test_sc', normalize_name='norm_test_sc')
+            test_subcategory = Subcategory.objects.create(name='test_sc', normalize_name='norm_test_sc')
 
             test_author = Author.objects.create(name='test_author')
 
@@ -77,7 +80,6 @@ class TestShading:
             """Go to page with name_url in selenium"""
             url = reverse(name_url, kwargs=kwargs)
             self.selenium.get('%s%s' % (self.live_server_url, url))
-            time.sleep(2)
 
         def get_response(self, name_url, **kwargs):
             """Get response to name url from django client"""
@@ -94,11 +96,8 @@ class TestShading:
 
         def _get_names_products(self, to, do):
             """Sorted by date publisher all specific products and return names products in range to-do"""
-            products = self.class_specific_product.objects \
-                                                  .select_related('product') \
-                                                  .filter(product__count_in_stock__gt=0) \
-                                                  .values('product__name') \
-                                                  .order_by('-product__date_pub')[to:do]
+            products = self.class_specific_product.objects.filter(product__count_in_stock__gt=0) \
+                           .values('product__name').order_by('-product__date_pub')[to:do]
             names_products = [name['product__name'] for name in products]
             return names_products
 
@@ -124,7 +123,7 @@ class TestShading:
             name_product = link_to_product_page.text
             link_to_product_page.click()
 
-            product_info = Product.objects.filter(name=name_product) \
+            product_info = Product.objects.filter(name=name_product)\
                 .values('name', 'description', 'price', 'count_in_stock')
             self.assertTrue(product_info, msg='Product from link not found in data base')
 
@@ -154,7 +153,6 @@ class TestShading:
             self.assertNotIn(self.selenium.page_source, BASKET_EMPTY_MESSAGE, 'Корзина пуста')
 
 
-@skip
 class TestIndexView(TestShading.BaseTest):
 
     def _buy_product_from_main_page(self):
@@ -164,7 +162,6 @@ class TestIndexView(TestShading.BaseTest):
         self.assertTrue(buy_buttons, 'Buy buttons not found')
         buy_button = buy_buttons[0]
         buy_button.click()
-        time.sleep(2)
 
     def test_template(self):
         """Test: use store/main.html"""
@@ -182,7 +179,6 @@ class TestIndexView(TestShading.BaseTest):
         for cls in classes_product_models:
             # get names products
             products_names = cls.objects \
-                       .select_related('product') \
                        .filter(product__count_in_stock__gt=0) \
                        .order_by('-product__date_pub')\
                        .values('product__name')[:10]
@@ -199,8 +195,7 @@ class TestIndexView(TestShading.BaseTest):
                 if cls == Book:
                     # check authors for books names
                     item = list_with_one_item[0]
-                    authors = Book.objects.select_related('product')\
-                        .get(product__name=name).authors.all()
+                    authors = Book.objects.get(product__name=name).authors.all()
                     self.assertTrue(authors)
                     authors_names = [author.name for author in authors]
                     # check all authors for book
@@ -226,7 +221,6 @@ class TestIndexView(TestShading.BaseTest):
         self.assertNotIn(self.selenium.page_source, BASKET_EMPTY_MESSAGE, 'Корзина пуста')
 
 
-@skip
 class TestBooksCategory(TestShading.TestCategoryMixin):
     """Books category"""
     category_name_url = 'root_books'
@@ -234,7 +228,6 @@ class TestBooksCategory(TestShading.TestCategoryMixin):
     class_specific_product = Book
 
 
-@skip
 class TestStationeryCategory(TestShading.TestCategoryMixin):
     """Stationery category"""
     category_name_url = 'root_stationery'
@@ -242,7 +235,6 @@ class TestStationeryCategory(TestShading.TestCategoryMixin):
     class_specific_product = Stationery
 
 
-@skip
 class TestCreationsCategory(TestShading.TestCategoryMixin):
     """Creations category"""
     category_name_url = 'root_creations'
@@ -250,20 +242,18 @@ class TestCreationsCategory(TestShading.TestCategoryMixin):
     class_specific_product = Creation
 
 
-@skip
 class TestFind(TestShading.TestCategoryMixin):
     """Test find function."""
-
     category_name_url = 'search'
     search_text = 'book'
-    title = 'Поиск по запросу "book"'
+    title = 'Поиск по запросу &quot;book&quot;'
 
     def _get_names_products(self, to, do):
         """Get last names from all class products"""
         products = []
 
         for class_product_model in classes_product_models:
-            products += class_product_model.objects.all().select_related('product') \
+            products += class_product_model.objects.all()\
                 .values('product__name') \
                 .filter(Q(product__name__icontains=self.search_text)
                         | Q(product__description__icontains=self.search_text)) \
@@ -278,7 +268,6 @@ class TestFind(TestShading.TestCategoryMixin):
         part_url = reverse('search', kwargs=kwargs)
         url = '%s%s?search=%s' % (self.live_server_url, part_url, self.search_text)
         self.selenium.get(url)
-        time.sleep(2)
 
     def get_response(self, name_url, **kwargs):
         """Get response to name url from django client"""
@@ -287,7 +276,6 @@ class TestFind(TestShading.TestCategoryMixin):
         return response
 
 
-@skip
 class TestBasket(TestShading.BaseTest):
     """Test add and sub from basket"""
 
