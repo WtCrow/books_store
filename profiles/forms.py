@@ -37,7 +37,7 @@ class UserRegistrationForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get('password', '')
 
-        if not 6 < len(password) < 32:
+        if not 6 <= len(password) <= 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
 
         return password
@@ -66,8 +66,7 @@ class UserRegistrationForm(forms.ModelForm):
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
 
-        username_len = len(username)
-        if username_len < 4 or username_len > 150:
+        if not 4 <= len(username) <= 150:
             raise ValidationError('Логин должен содержать от 4 до 150 символов.')
 
         if User.objects.filter(username=username):
@@ -96,35 +95,26 @@ class UserEditForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['password', 'email']
+        fields = ['email']
 
         labels = {
-            "password": "Текущий пароль",
-            "email": "Электронная почта",
+            "email": "Новая электронная почта",
         }
 
         widgets = {
-            'password': forms.PasswordInput(),
             'email': forms.EmailInput(),
         }
 
     new_password = forms.CharField(max_length=32, required=False, widget=forms.PasswordInput(), label='Новый пароль')
     repeat_new_password = forms.CharField(max_length=32, required=False, widget=forms.PasswordInput(),
                                           label='Повторите новый пароль')
+    old_password = forms.CharField(max_length=32, required=True, widget=forms.PasswordInput(), label='Текущий пароль')
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # change required for model field
         self.fields['email'].required = False
         self.user = user
-
-    def clean_password(self):
-        password = self.cleaned_data.get('password', '')
-
-        if not self.user.check_password(password):
-            raise ValidationError('Старый пароль не верен.')
-
-        return password
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
@@ -144,15 +134,11 @@ class UserEditForm(forms.ModelForm):
 
     def clean_new_password(self):
         new_password = self.cleaned_data.get('new_password', '')
-        repeat_new_password = self.cleaned_data.get('repeat_new_password', '')
 
-        if not (new_password and repeat_new_password):
+        if not new_password:
             return new_password
 
-        if (not new_password and repeat_new_password) or (new_password and not repeat_new_password):
-            raise ValidationError('Повторите новый пароль.')
-
-        if not 6 < len(new_password) < 32:
+        if not 6 <= len(new_password) <= 32:
             raise ValidationError('Пароль должен содержать от 6 до 32 символов.')
 
         return new_password
@@ -165,6 +151,14 @@ class UserEditForm(forms.ModelForm):
             raise ValidationError('Новые пароли не совпадают')
 
         return repeat_new_password
+
+    def clean_old_password(self):
+        password = self.cleaned_data.get('old_password', '')
+
+        if not self.user.check_password(password):
+            raise ValidationError('Старый пароль не верен.')
+
+        return password
 
     def save(self, commit=True):
         if self.cleaned_data["new_password"]:

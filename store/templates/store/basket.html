@@ -48,7 +48,7 @@
                  <span>К оплате: {{ sum_price }} руб.</span>
                 <form method="post" action="{% url 'buy_products' %}">
                     {% csrf_token %}
-                    <button type="submit">Оформить</button>
+                    <button type="submit" class="buy_btn">Оформить</button>
                 </form>
                 {% endif %}
             </div>

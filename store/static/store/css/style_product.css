@@ -34,3 +34,9 @@
     width: 125px;
     border: 1px solid black;
 }
+
+.buy_area form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

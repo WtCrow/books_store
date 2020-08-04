@@ -6,7 +6,6 @@ from selenium import webdriver
 from functools import partial
 from store.models import *
 from unittest import skip
-import time
 
 User = get_user_model()
 BASKET_EMPTY_MESSAGE = 'Ваша корзина пуста'
@@ -81,10 +80,16 @@ class TestShading:
             url = reverse(name_url, kwargs=kwargs)
             self.selenium.get('%s%s' % (self.live_server_url, url))
 
-        def get_response(self, name_url, **kwargs):
-            """Get response to name url from django client"""
+        def get_request(self, name_url, **kwargs):
+            """GET response to name url from django client"""
             url_path = reverse(name_url, kwargs=kwargs)
             response = self.client.get(url_path)
+            return response
+
+        def post_request(self, name_url, **kwargs):
+            """POST response to name url from django client"""
+            url_path = reverse(name_url)
+            response = self.client.post(url_path, data=kwargs)
             return response
 
     class TestCategoryMixin(BaseTest):
@@ -103,12 +108,12 @@ class TestShading:
 
         def test_template(self):
             """Test: use template store/category.html"""
-            response = self.get_response(self.category_name_url)
+            response = self.get_request(self.category_name_url)
             self.assertTemplateUsed(response, self.template)
 
         def test_content(self):
             """Test: page category contain first 15 product, that order by date publisher"""
-            response = self.get_response(self.category_name_url)
+            response = self.get_request(self.category_name_url)
 
             self.assertContains(response, self.title)
 
@@ -165,7 +170,7 @@ class TestIndexView(TestShading.BaseTest):
 
     def test_template(self):
         """Test: use store/main.html"""
-        response = self.get_response('index')
+        response = self.get_request('index')
         self.assertTemplateUsed(response, 'store/main.html')
 
     def test_content(self):
@@ -269,7 +274,7 @@ class TestFind(TestShading.TestCategoryMixin):
         url = '%s%s?search=%s' % (self.live_server_url, part_url, self.search_text)
         self.selenium.get(url)
 
-    def get_response(self, name_url, **kwargs):
+    def get_request(self, name_url, **kwargs):
         """Get response to name url from django client"""
         part_url = reverse(name_url, kwargs=kwargs)
         response = self.client.get(part_url, {'search': self.search_text})
@@ -293,15 +298,14 @@ class TestBasket(TestShading.BaseTest):
         self.client.login(username=self.username, password=self.password)
 
         # check empty basket
-        response = self.get_response(self.url_basket)
+        response = self.get_request(self.url_basket)
         self.assertContains(response, BASKET_EMPTY_MESSAGE)
 
         # add product with id=1
-        product = Product.objects.all()[0]
-        self.get_response(self.url_add, pk=product.id)
+        self.post_request(self.url_add, product_id=Product.objects.all()[0].pk)
 
         # check not empty basket
-        response = self.get_response(self.url_basket)
+        response = self.get_request(self.url_basket)
         self.assertNotContains(response, BASKET_EMPTY_MESSAGE)
 
     def test_overflow_add(self):
@@ -312,7 +316,7 @@ class TestBasket(TestShading.BaseTest):
         self.client.login(username=self.username, password=self.password)
 
         # check empty basket
-        response = self.get_response(self.url_basket)
+        response = self.get_request(self.url_basket)
         self.assertContains(response, BASKET_EMPTY_MESSAGE)
 
         # add count_in_stock + 3 products
@@ -320,10 +324,10 @@ class TestBasket(TestShading.BaseTest):
         count_in_stock = product.count_in_stock
 
         for _ in range(0, count_in_stock + 3):
-            self.get_response(self.url_add, pk=product.id)
+            self.post_request(self.url_add, product_id=product.pk)
 
         # check not empty basket
-        response = self.get_response(self.url_basket)
+        response = self.get_request(self.url_basket)
         self.assertNotContains(response, BASKET_EMPTY_MESSAGE)
 
         # check count product in data base model
@@ -340,12 +344,12 @@ class TestBasket(TestShading.BaseTest):
         self.client.login(username=self.username, password=self.password)
 
         # first sub
-        self.get_response(self.url_sub, pk=product.id)
+        self.post_request(self.url_sub, product_id=product.pk)
         self.assertEqual(basket_item.count, 2,
                          f'Count product in basket test user before sub_request {basket_item.count}')
 
         # second sub
-        self.get_response(self.url_sub, pk=product.id)
+        self.post_request(self.url_sub, product_id=product.pk)
         self.assertTrue(basket_item.count, f'Basket item not deleted. Count basket item == {basket_item.count}')
 
     def test_sub_from_empty_basket(self):
@@ -362,7 +366,7 @@ class TestBasket(TestShading.BaseTest):
                          f'Basket test user contain products. Count = {basket_item_test_user.count()}')
 
         # sub
-        response = self.get_response(self.url_sub, pk=product.id)
+        response = self.post_request(self.url_sub, product_id=product.pk)
 
         full_url_basket = '%s%s' % (self.live_server_url, reverse(self.url_basket))
         # check user not redirect to basket

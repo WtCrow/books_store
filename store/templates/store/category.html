@@ -23,7 +23,7 @@
                 <form method="post" action="{% url 'add_in_basket' %}">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.product.id }}">
-                    <button type="submit">Купить</button>
+                    <button type="submit" class="buy_btn">Купить</button>
                 </form>
                 </div>
             </div>
