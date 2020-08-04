@@ -15,7 +15,6 @@ li {
     grid-template-columns: 1fr 2.5fr 2.5fr;
     align-items: center;
     justify-content: center;
-    grid-gap: 5px;
     background-color: #81BAF5;
     border-radius: 5px;
     overflow: hidden;
@@ -63,29 +62,17 @@ li {
     flex-direction: column;
 }
 
-.change_count_area {
+.detail_product_area {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+}
+
+.change_count {
     display: flex;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-    supported by Chrome, Opera and Firefox */
-}
-
-.change_count_area a {
-    text-decoration: none;
-}
-
-.change_count_area a:hover {
-    text-decoration: none;
-    color: white;
-}
-
-.flex_count_and_price {
-    display: flex;
-    flex-direction: column;
+    flex-direction: row;
+	align-items: center;
+	justify-content: center;
 }
 
 .total {

@@ -16,15 +16,26 @@
                                 <span class="name_product">{{ product.instance.name }}</span>
                             </div>
                         </a>
-                        <div class="change_count_area">
+                        <div class="detail_product_area">
                             <span>{{ product.instance.price|floatformat }} руб.</span>
-                            <span>Количество</span>
-                                <div class="count">
-                                    <a href="{% url 'sub_from_basket' product.instance.id %}">-</a>
+                            <div class="change_count">
+                                <form method="post" action="{% url 'sub_from_basket' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.instance.id }}">
+                                    <button type="submit">-</button>
+                                </form>
                                     <span>{{ product.count }}</span>
-                                    <a href="{% url 'add_in_basket' product.instance.id %}">+</a>
-                                </div>
-                            <a href="{% url 'delete_from_basket' product.instance.id %}"><button>Удалить</button></a>
+                                <form method="post" action="{% url 'add_in_basket' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.instance.id }}">
+                                    <button type="submit">+</button>
+                                </form>
+                            </div>
+                            <form method="post" action="{% url 'delete_from_basket' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.instance.id }}">
+                                <button type="submit">Удалить</button>
+                            </form>
                         </div>
                     </div>
                 </li>
@@ -35,7 +46,10 @@
                     <span>Ваша корзина пуста :( <a href="{% url 'index' %}">Начать покупки!</a></span>
                 {% else %}
                  <span>К оплате: {{ sum_price }} руб.</span>
-                <a href="{% url 'buy_products' %}"><button type="submit">Оформить</button></a>
+                <form method="post" action="{% url 'buy_products' %}">
+                    {% csrf_token %}
+                    <button type="submit">Оформить</button>
+                </form>
                 {% endif %}
             </div>
         </div>

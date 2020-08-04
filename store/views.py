@@ -1,3 +1,4 @@
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView
@@ -7,10 +8,12 @@ from .models import *
 from .utils import *
 
 
+@require_http_methods(["GET"])
 def custom_handler404(request, *args, **kwargs):
     return render(request, 'store/message.html', context={'message': '404 запрашиваемый ресурс не найден', 'code': 404})
 
 
+@require_http_methods(["GET"])
 def index(request):
     """Renderer main page
 
@@ -116,7 +119,9 @@ class Find(PageNumbersList, View):
                       )
 
 
+# TODO: create class for basket with various methods POST (add), POST (sub), GET, DELETE
 @login_required
+@require_http_methods(["GET"])
 def basket(request):
     """Show all product from user basket"""
 
@@ -145,14 +150,15 @@ def basket(request):
                                                          })
 
 
-# TODO: change to POST, UPDATE, DELETE
 @login_required
-def add_in_basket(request, pk):
+@require_http_methods(["POST"])
+def add_in_basket(request):
     """Add new product or inc count exist product in basket"""
     # validation pk
-    if not pk.isdigit():
+    product_id = request.POST.get('product_id')
+    if not product_id.isdigit():
         raise Http404
-    instance_product = get_object_or_404(Product, id=pk)
+    instance_product = get_object_or_404(Product, id=product_id)
     # guard of bad request from url-panel
     if instance_product.count_in_stock <= 0:
         raise Http404
@@ -171,12 +177,14 @@ def add_in_basket(request, pk):
 
 
 @login_required
-def sub_from_basket(request, pk):
+@require_http_methods(["POST"])
+def sub_from_basket(request):
     """Decrement count or delete product in basket"""
     # validation pk
-    if not pk.isdigit():
+    product_id = request.POST.get('product_id')
+    if not product_id.isdigit():
         raise Http404
-    product = get_object_or_404(Product, id=pk)
+    product = get_object_or_404(Product, id=product_id)
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=product))
 
     if basket_item:
@@ -190,12 +198,14 @@ def sub_from_basket(request, pk):
 
 
 @login_required
-def delete_from_basket(request, pk):
+@require_http_methods(["POST"])
+def delete_from_basket(request):
     """Delete product from basket"""
     # validation pk
-    if not pk.isdigit():
+    product_id = request.POST.get('product_id')
+    if not product_id.isdigit():
         raise Http404
-    instance_model = get_object_or_404(Product, id=pk)
+    instance_model = get_object_or_404(Product, id=product_id)
     basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
     if basket_item:
         basket_item[0].delete()
@@ -204,6 +214,7 @@ def delete_from_basket(request, pk):
 
 
 @login_required
+@require_http_methods(["POST"])
 def buy_product(request):
     """Handler for "buy" product.
 
@@ -232,7 +243,6 @@ def buy_product(request):
               добавили одинаковые товары в корзины, корзина другого профиля, могла измениться."""
 
     return render(request, 'store/message.html', context={'message': message})
-# TODO: change to POST, UPDATE, DELETE
 
 
 class StoryPurchase(LoginRequiredMixin, PageNumbersList, View):

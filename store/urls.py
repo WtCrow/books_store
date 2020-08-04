@@ -24,9 +24,9 @@ urlpatterns = [
     path('products/<str:category>/', custom_handler404, name='root_category'),
 
     path('basket/', basket, name='basket'),
-    path('basket/add/<pk>/', add_in_basket, name='add_in_basket'),
-    path('basket/sub/<pk>/', sub_from_basket, name='sub_from_basket'),
-    path('basket/del/<pk>/', delete_from_basket, name='delete_from_basket'),
+    path('basket/add/', add_in_basket, name='add_in_basket'),
+    path('basket/sub/', sub_from_basket, name='sub_from_basket'),
+    path('basket/del/', delete_from_basket, name='delete_from_basket'),
     path('basket/buy/', buy_product, name='buy_products'),
 
     path('purchase_story/', StoryPurchase.as_view(), name='story'),
