@@ -2,6 +2,7 @@ beautifulsoup4==4.8.0
 certifi==2019.9.11
 chardet==3.0.4
 Django==2.2.13
+gunicorn==20.0.4
 idna==2.8
 psycopg2==2.8.3
 pytz==2019.2
@@ -10,3 +11,4 @@ selenium==3.141.0
 soupsieve==1.9.3
 sqlparse==0.3.0
 urllib3==1.25.3
+whitenoise==5.2.0
