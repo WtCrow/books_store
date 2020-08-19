@@ -1,8 +1,15 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 from .views import *
 
 
+router = DefaultRouter()
+router.register(r'test', Basket)
+router.register(r'test/<int:pk>/', Basket)
+
 urlpatterns = [
+    path('store/api/v1/', include(router.urls)),
+
     path('', index, name='index'),
 
     path('products/search/', Find.as_view(), name='search'),
@@ -23,10 +30,7 @@ urlpatterns = [
     path('products/<str:category>/<str:subcategory>/', custom_handler404, name='root_category'),
     path('products/<str:category>/', custom_handler404, name='root_category'),
 
-    path('basket/', basket, name='basket'),
-    path('basket/add/', add_in_basket, name='add_in_basket'),
-    path('basket/sub/', sub_from_basket, name='sub_from_basket'),
-    path('basket/del/', delete_from_basket, name='delete_from_basket'),
+    path('basket/', GetBasketPage.as_view(), name='basket'),
     path('basket/buy/', buy_product, name='buy_products'),
 
     path('purchase_story/', StoryPurchase.as_view(), name='story'),

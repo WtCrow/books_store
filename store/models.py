@@ -102,7 +102,7 @@ class BasketItem(models.Model):
     """Current product some user"""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_query_name='basket_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_query_name='basket_items')
-    count = models.IntegerField()
+    count = models.IntegerField(validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f'user: {self.user} product: {self.product}'

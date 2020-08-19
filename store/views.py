@@ -1,9 +1,14 @@
+from django.views.generic import View, DetailView, TemplateView
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View, DetailView
+from .serializers import BasketItemCurrentUserSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 from django.db.models import F, Sum, FloatField
+from rest_framework.response import Response
 from django.shortcuts import redirect
+from rest_framework import status
 from .models import *
 from .utils import *
 
@@ -119,98 +124,26 @@ class Find(PageNumbersList, View):
                       )
 
 
-# TODO: create class for basket with various methods POST (add), POST (sub), GET, DELETE
-@login_required
-@require_http_methods(["GET"])
-def basket(request):
-    """Show all product from user basket"""
-
-    # calculate total price in one SQL query
-    sum_price = BasketItem.objects.filter(user=request.user)\
-        .aggregate(sum_price=Sum(F('product__price') * F('count'), output_field=FloatField()))['sum_price']
-
-    # get basket current user
-    basket_items = BasketItem.objects.filter(user=request.user)
-    # get all specific product classes (Book, Creation ...) from user basket
-    products_and_links = []
-
-    for basket_item in basket_items:
-        product = basket_item.product
-
-        specific_object = get_specific_object(product)
-        link = specific_object.get_absolute_url()
-
-        products_and_links.append({'instance': product,
-                                   'link': link,
-                                   'count': basket_item.count,
-                                   })
-
-    return render(request, 'store/basket.html', context={'products': products_and_links,
-                                                         'sum_price': sum_price,
-                                                         })
+class GetBasketPage(TemplateView, LoginRequiredMixin):
+    template_name = 'store/basket.html'
 
 
-@login_required
-@require_http_methods(["POST"])
-def add_in_basket(request):
-    """Add new product or inc count exist product in basket"""
-    # validation pk
-    product_id = request.POST.get('product_id')
-    if not product_id.isdigit():
-        raise Http404
-    instance_product = get_object_or_404(Product, id=product_id)
-    # guard of bad request from url-panel
-    if instance_product.count_in_stock <= 0:
-        raise Http404
+class Basket(ModelViewSet):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = BasketItemCurrentUserSerializer
+    queryset = BasketItem.objects.all()
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
-    # add new basket item or inc exist basket item
-    basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_product))
-    if basket_item:
-        basket_item = basket_item[0]
-        if instance_product.count_in_stock >= basket_item.count + 1:
-            basket_item.count = F('count') + 1
-            basket_item.save()
-    else:
-        BasketItem.objects.create(user=request.user, product=instance_product, count=1)
+    def get_queryset(self):
+        return BasketItem.objects.filter(user=self.request.user)
 
-    return redirect('basket')
-
-
-@login_required
-@require_http_methods(["POST"])
-def sub_from_basket(request):
-    """Decrement count or delete product in basket"""
-    # validation pk
-    product_id = request.POST.get('product_id')
-    if not product_id.isdigit():
-        raise Http404
-    product = get_object_or_404(Product, id=product_id)
-    basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=product))
-
-    if basket_item:
-        if basket_item[0].count <= 1:
-            basket_item[0].delete()
-        else:
-            basket_item[0].count = F('count') - 1
-            basket_item[0].save()
-
-    return redirect('basket')
-
-
-@login_required
-@require_http_methods(["POST"])
-def delete_from_basket(request):
-    """Delete product from basket"""
-    # validation pk
-    product_id = request.POST.get('product_id')
-    if not product_id.isdigit():
-        raise Http404
-    instance_model = get_object_or_404(Product, id=product_id)
-    basket_item = BasketItem.objects.filter(Q(user=request.user) & Q(product=instance_model))
-    if basket_item:
-        basket_item[0].delete()
-
-    return redirect('basket')
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance_id = instance.id
+        if instance.user != request.user:
+            return Response(data={'error': 'Wrong user'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.perform_destroy(instance)
+        return Response(data={'id': instance_id}, status=status.HTTP_200_OK)
 
 
 @login_required
@@ -233,8 +166,7 @@ def buy_product(request):
     for basket_item in basket_items:
         ProductInOrder.objects.create(product=basket_item.product, order=order,
                                       count=basket_item.count,
-                                      price=basket_item.product.price
-                                      )
+                                      price=basket_item.product.price)
         basket_item.delete()
 
     message = """Так как это только демонстрационный сайт, для того, чтобы показать мои навыки работы с Django, 

@@ -7,50 +7,9 @@
         <div class="basket_page">
             <h2>Ваши товары</h2>
             <ul>
-                {% for product in products %}
-                <li>
-                    <div class="product">
-                        <a href="{{ product.link }}"><img src="{% static product.instance.picture_name.url %}"></a>
-                        <a href="{{ product.link }}">
-                            <div class="info_product">
-                                <span class="name_product">{{ product.instance.name }}</span>
-                            </div>
-                        </a>
-                        <div class="detail_product_area">
-                            <span>{{ product.instance.price|floatformat }} руб.</span>
-                            <div class="change_count">
-                                <form method="post" action="{% url 'sub_from_basket' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ product.instance.id }}">
-                                    <button type="submit">-</button>
-                                </form>
-                                    <span>{{ product.count }}</span>
-                                <form method="post" action="{% url 'add_in_basket' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ product.instance.id }}">
-                                    <button type="submit">+</button>
-                                </form>
-                            </div>
-                            <form method="post" action="{% url 'delete_from_basket' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.instance.id }}">
-                                <button type="submit">Удалить</button>
-                            </form>
-                        </div>
-                    </div>
-                </li>
-                {% endfor %}
             </ul>
             <div class="total">
-                {% if not products|length %}
                     <span>Ваша корзина пуста :( <a href="{% url 'index' %}">Начать покупки!</a></span>
-                {% else %}
-                 <span>К оплате: {{ sum_price }} руб.</span>
-                <form method="post" action="{% url 'buy_products' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="buy_btn">Оформить</button>
-                </form>
-                {% endif %}
             </div>
         </div>
 {% endblock %}

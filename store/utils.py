@@ -3,6 +3,7 @@ from .models import Subcategory, classes_product_models
 from django.http import Http404
 
 
+# TODO: replaced on DRF pagination
 class PageNumbersList:
     """Methods for generate correct list page numbers"""
     count_items_at_page = None
