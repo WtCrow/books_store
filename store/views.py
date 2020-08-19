@@ -25,14 +25,18 @@ def index(request):
     Show 3 lists various products category and sections with last added products.
 
     """
+    exclude_filters = {}
+    if request.user:
+        exclude_filters['product_id__in'] = BasketItem.objects.filter(user=request.user)\
+                                                              .values_list('product_id', flat=True)
     books_models = Book.objects \
-                       .filter(product__count_in_stock__gt=0) \
+                       .filter(product__count_in_stock__gt=0).exclude(**exclude_filters) \
                        .order_by('-product__date_pub')[:10]
     stationery_models = Stationery.objects \
-                                  .filter(product__count_in_stock__gt=0) \
+                                  .filter(product__count_in_stock__gt=0).exclude(**exclude_filters) \
                                   .order_by('-product__date_pub')[:10]
     creations_models = Creation.objects \
-                               .filter(product__count_in_stock__gt=0) \
+                               .filter(product__count_in_stock__gt=0).exclude(**exclude_filters) \
                                .order_by('-product__date_pub')[:10]
     return render(request, 'store/main.html', context={'books': books_models,
                                                        'stationery': stationery_models,

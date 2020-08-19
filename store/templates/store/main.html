@@ -25,9 +25,10 @@
                         <div class="buy_area">
                             <span>{{ book.product.price|floatformat }} руб.</span>
 
-                        <form method="post" action="{% url 'add_in_basket' %}">
+                        <form method="post" action="{% url 'base_basket_api-list' %}">
                             {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ book.product.id }}">
+                            <input type="hidden" name="product" value="{{ book.product.id }}">
+                                <input type="hidden" name="count" value=1>
                             <button type="submit" class="buy_btn">Купить</button>
                         </form>
                         </div>
@@ -46,9 +47,10 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ st.product.price|floatformat }} руб.</span>
-                            <form method="post" action="{% url 'add_in_basket' %}">
+                            <form method="post" action="{% url 'base_basket_api-list' %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ st.product.id }}">
+                                <input type="hidden" name="product" value="{{ st.product.id }}">
+                                <input type="hidden" name="count" value=1>
                                 <button type="submit" class="buy_btn">Купить</button>
                             </form>
                         </div>
@@ -67,9 +69,10 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ creation.product.price|floatformat }} руб.</span>
-                            <form method="post" action="{% url 'add_in_basket' %}">
+                            <form method="post" action="{% url 'base_basket_api-list' %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ creation.product.id }}">
+                                <input type="hidden" name="product" value="{{ creation.product.id }}">
+                                <input type="hidden" name="count" value=1>
                                 <button type="submit" class="buy_btn">Купить</button>
                             </form>
                         </div>
@@ -78,4 +81,5 @@
                 </ul>
             </div>
         </div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 {% endblock %}

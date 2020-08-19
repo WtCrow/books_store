@@ -4,8 +4,8 @@ from .views import *
 
 
 router = DefaultRouter()
-router.register(r'test', Basket)
-router.register(r'test/<int:pk>/', Basket)
+router.register(r'basket', Basket, basename='base_basket_api')
+router.register(r'basket/<int:pk>/', Basket, basename='change_basket_api')
 
 urlpatterns = [
     path('store/api/v1/', include(router.urls)),

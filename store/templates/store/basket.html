@@ -6,10 +6,11 @@
 {% block main_content %}
         <div class="basket_page">
             <h2>Ваши товары</h2>
-            <ul>
-            </ul>
-            <div class="total">
-                    <span>Ваша корзина пуста :( <a href="{% url 'index' %}">Начать покупки!</a></span>
+            <div id="basket_content">
+                <span>Загрузка ...</span>
             </div>
         </div>
+<script type="application/ecmascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="{% static 'store/js/basket.js' %}"></script>
+{% load static %}
 {% endblock %}
