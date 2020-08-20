@@ -26,7 +26,7 @@ def index(request):
 
     """
     exclude_filters = {}
-    if request.user:
+    if request.user and request.user.is_authenticated:
         exclude_filters['product_id__in'] = BasketItem.objects.filter(user=request.user)\
                                                               .values_list('product_id', flat=True)
     books_models = Book.objects \

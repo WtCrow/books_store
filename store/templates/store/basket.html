@@ -2,7 +2,12 @@
 {% load static %}
 {% block additional_styles %}<link type="text/css" rel="stylesheet" href="{% static 'store/css/style_basket.css' %}">{% endblock %}
 {% block title %}Корзина{% endblock %}
-
+{% block scripts %}
+{{ block.super }}
+<script type="application/ecmascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="{% static 'store/js/basket.js' %}"></script>
+{% endblock %}
+{% load static %}
 {% block main_content %}
         <div class="basket_page">
             <h2>Ваши товары</h2>
@@ -10,7 +15,4 @@
                 <span>Загрузка ...</span>
             </div>
         </div>
-<script type="application/ecmascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="{% static 'store/js/basket.js' %}"></script>
-{% load static %}
 {% endblock %}

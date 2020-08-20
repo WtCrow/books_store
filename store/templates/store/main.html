@@ -4,7 +4,11 @@
 <link type="text/css" rel="stylesheet" href="{% static 'store/css/style_main.css' %}">
 <link type="text/css" rel="stylesheet" href="{% static 'store/css/style_card_product.css' %}">
 {% endblock %}
-
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'store/js/main.js' %}"></script>
+{% endblock %}
+{% load static %}
 {% block main_content %}
         <div class="main_content">
             <div class="scroll_panel">
@@ -24,13 +28,7 @@
                         </div></a>
                         <div class="buy_area">
                             <span>{{ book.product.price|floatformat }} руб.</span>
-
-                        <form method="post" action="{% url 'base_basket_api-list' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="product" value="{{ book.product.id }}">
-                                <input type="hidden" name="count" value=1>
-                            <button type="submit" class="buy_btn">Купить</button>
-                        </form>
+                            <button onclick="buyRequest({{ book.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
@@ -47,12 +45,7 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ st.product.price|floatformat }} руб.</span>
-                            <form method="post" action="{% url 'base_basket_api-list' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product" value="{{ st.product.id }}">
-                                <input type="hidden" name="count" value=1>
-                                <button type="submit" class="buy_btn">Купить</button>
-                            </form>
+                            <button onclick="buyRequest({{ st.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
@@ -69,12 +62,7 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ creation.product.price|floatformat }} руб.</span>
-                            <form method="post" action="{% url 'base_basket_api-list' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product" value="{{ creation.product.id }}">
-                                <input type="hidden" name="count" value=1>
-                                <button type="submit" class="buy_btn">Купить</button>
-                            </form>
+                            <button onclick="buyRequest({{ creation.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
