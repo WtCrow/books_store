@@ -111,8 +111,9 @@ class ProductPageMixin(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProductPageMixin, self).get_context_data(**kwargs)
-        context['is_in_basket'] = BasketItem.objects.filter(product=self.get_object().product.id,
-                                                            user=self.request.user).exists()
+        if self.request.user.is_authenticated:
+            context['is_in_basket'] = BasketItem.objects.filter(product=self.get_object().product.id,
+                                                                user=self.request.user).exists()
         return context
 
 

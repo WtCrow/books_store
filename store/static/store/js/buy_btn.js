@@ -3,6 +3,10 @@ function toBasket() {
 }
 
 function buyRequest(e, id) {
+    if (!is_auth_user) {
+        window.location.href = '/accounts/login';
+        return;
+    }
     $.ajax({
         url: "/store/api/v1/basket/",
         type: "post",
