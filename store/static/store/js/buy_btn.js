@@ -1,3 +1,7 @@
+function toBasket() {
+    window.location.href = '/basket';
+}
+
 function buyRequest(e, id) {
     $.ajax({
         url: "/store/api/v1/basket/",
@@ -10,7 +14,7 @@ function buyRequest(e, id) {
             (jqXHR.responseJSON.error && jqXHR.responseJSON.error.filter(error => error.includes('already in basket')))) {
             e.textContent = 'В корзине';
             e.style.background='#aaea99';
-            e.onclick = function() { window.location.href = '/basket'; }
+            e.onclick = toBasket;
         }
     });
 }

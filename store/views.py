@@ -1,9 +1,9 @@
-from django.views.generic import View, DetailView, TemplateView
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .serializers import BasketItemCurrentUserSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.views.generic import View, TemplateView
 from rest_framework.viewsets import ModelViewSet
 from django.db.models import F, Sum, FloatField
 from rest_framework.response import Response
@@ -64,19 +64,19 @@ class StationeryCategory(CategoryMixin, View):
     category = 'stationery'
 
 
-class BookPage(DetailView):
+class BookPage(ProductPageMixin):
     """Page with specific book category product"""
     model = Book
     template_name = 'store/product.html'
 
 
-class CreationPage(DetailView):
+class CreationPage(ProductPageMixin):
     """Page with specific creation category product"""
     model = Creation
     template_name = 'store/product.html'
 
 
-class StationeryPage(DetailView):
+class StationeryPage(ProductPageMixin):
     """Page with specific stationery category product"""
     model = Stationery
     template_name = 'store/product.html'

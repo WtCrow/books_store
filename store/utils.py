@@ -1,5 +1,6 @@
+from .models import Subcategory, classes_product_models, BasketItem
 from django.shortcuts import render, reverse, get_object_or_404
-from .models import Subcategory, classes_product_models
+from django.views.generic import DetailView
 from django.http import Http404
 
 
@@ -104,6 +105,15 @@ class CategoryMixin(PageNumbersList):
                                'current_url': current_url,
                                }
                       )
+
+
+class ProductPageMixin(DetailView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductPageMixin, self).get_context_data(**kwargs)
+        context['is_in_basket'] = BasketItem.objects.filter(product=self.get_object().product.id,
+                                                            user=self.request.user).exists()
+        return context
 
 
 def get_specific_object(product):

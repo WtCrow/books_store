@@ -4,7 +4,11 @@
 <link type="text/css" rel="stylesheet" href="{% static 'store/css/style_product.css' %}">
 {% endblock %}
 {% block title %} {{ object.product.name }} {% endblock %}
-
+{% block scripts %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="{% static 'store/js/buy_btn.js' %}"></script>
+{% endblock %}
 {% block main_content %}
         <div class="product_page">
             <img src="{% static object.product.picture_name.url %}">
@@ -21,14 +25,19 @@
                 {{ object.product.description }}
             </article>
             <div class="buy_area">
-                <span>{{ object.product.price|floatformat }} руб.</span>
                 <span>На складе: {{ object.product.count_in_stock }}</span>
-                {% if object.product.count_in_stock > 0 %}
-                <form method="post" action="{% url 'add_in_basket' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="product_id" value="{{ object.product.id }}">
-                    <button type="submit" class="buy_btn">Купить</button>
-                </form>
+                {% if is_in_basket %}
+                <div class="buy_area">
+                    <span>{{ object.product.price|floatformat }} руб.</span>
+                    <button onclick="toBasket()" class="buy_btn" style="background: rgb(170, 234, 153) none repeat scroll 0% 0%;">
+                        В корзине
+                    </button>
+                </div>
+                {% elif object.product.count_in_stock > 0 %}
+                <div class="buy_area">
+                    <span>{{ object.product.price|floatformat }} руб.</span>
+                    <button onclick="buyRequest(this, {{ object.product.id }})" class="buy_btn">Купить</button>
+                </div>
                 {% else %}
                 <span>Товар отсутствует</span>
                 {% endif %}
