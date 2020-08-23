@@ -15,10 +15,13 @@ function buyRequest(e, id) {
     })
     .always(function(jqXHR, textStatus) {
         if (textStatus == 'success' ||
-            (jqXHR.responseJSON.error && jqXHR.responseJSON.error.filter(error => error.includes('already in basket')))) {
+            (jqXHR.responseJSON.error && jqXHR.responseJSON.error.filter(error => error.includes('already in basket')).length > 0)) {
             e.textContent = 'В корзине';
             e.style.background='#aaea99';
             e.onclick = toBasket;
+        } else if ((jqXHR.responseJSON.error && jqXHR.responseJSON.error.filter(error => error.includes('Count in stock less')).length > 0)) {
+            e.textContent = 'Закончился';
+            e.onclick = function() {};
         }
     });
 }

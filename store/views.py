@@ -103,8 +103,24 @@ class Find(PageNumbersList, View):
         # In self.template need pass specific product class, also Product.objects.filter no way
         products = []
         for class_product_model in classes_product_models:
+            sql_table_name = class_product_model._meta.db_table
+            if request.user.is_authenticated:
+                select = {'is_in_basket': f"""
+                    SELECT EXISTS (SELECT *
+                    FROM store_basketitem
+                    INNER JOIN auth_user
+                        ON auth_user.id = store_basketitem.user_id
+                    WHERE
+                        store_basketitem.product_id = {sql_table_name}.product_id
+                        AND store_basketitem.user_id = %s)
+                    """}
+                select_params = (request.user.id,)
+            else:
+                select = {'is_in_basket': 'SELECT FALSE'}
+                select_params = ()
             products += class_product_model.objects.all().filter(Q(product__name__icontains=search_text)
-                                                                 | Q(product__description__icontains=search_text))\
+                                                                 | Q(product__description__icontains=search_text)) \
+                .extra(select=select, select_params=select_params)\
                 .order_by('-product__date_pub')
         products = products[to:do]
 

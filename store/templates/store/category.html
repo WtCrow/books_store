@@ -5,7 +5,11 @@
 {{ block.super }}
 <link type="text/css" rel="stylesheet" href="{% static 'store/css/style_card_product.css' %}">
 {% endblock %}
-
+{% block scripts %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="{% static 'store/js/buy_btn.js' %}"></script>
+{% endblock %}
 {% block content_at_page %}
         <h2>{{ title }} {{ total_count }} товаров</h2>
         <div class="products">
@@ -20,11 +24,13 @@
                 </a>
                 <div class="buy_area">
                     <span>{{ product.product.price|floatformat }} руб.</span>
-                <form method="post" action="{% url 'add_in_basket' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="product_id" value="{{ product.product.id }}">
-                    <button type="submit" class="buy_btn">Купить</button>
-                </form>
+                    {% if product.is_in_basket %}
+                    <button onclick="toBasket()" class="buy_btn" style="background: rgb(170, 234, 153) none repeat scroll 0% 0%;">
+                        В корзине
+                    </button>
+                    {% else %}
+                    <button onclick="buyRequest(this, {{ product.product.id }})" class="buy_btn">Купить</button>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

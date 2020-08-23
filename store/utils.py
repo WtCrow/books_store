@@ -83,10 +83,25 @@ class CategoryMixin(PageNumbersList):
         filters_dict = {'product__count_in_stock__gt': 0}
         if subcategory:
             filters_dict['product__subcategory__name'] = subcategory
-        products_models = self.class_model.objects.filter(**filters_dict).order_by('-product__date_pub')[to:do]
+        if request.user.is_authenticated:
+            sql_table_name = self.class_model._meta.db_table
+            select = {'is_in_basket': f"""
+                SELECT EXISTS (SELECT *
+                FROM store_basketitem
+                INNER JOIN auth_user
+                    ON auth_user.id = store_basketitem.user_id
+                WHERE
+                    store_basketitem.product_id = {sql_table_name}.product_id
+                    AND store_basketitem.user_id = %s)
+                """}
+            select_params = (request.user.id, )
+        else:
+            select = {'is_in_basket': 'SELECT FALSE'}
+            select_params = ()
+        products_models = self.class_model.objects.filter(**filters_dict).order_by('-product__date_pub')\
+                              .extra(select=select, select_params=select_params)[to:do]
         count = self.class_model.objects.filter(**filters_dict).order_by('-product__date_pub').count()
 
-        # get list with numbers pages
         numbers_pages = self._get_numbers_pages(page, count)
 
         # generate url for switch between pages
