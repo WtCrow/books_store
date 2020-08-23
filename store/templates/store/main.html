@@ -28,7 +28,7 @@
                         </div></a>
                         <div class="buy_area">
                             <span>{{ book.product.price|floatformat }} руб.</span>
-                            <button onclick="buyRequest({{ book.product.id }})" class="buy_btn">Купить</button>
+                            <button onclick="buyRequest(this, {{ book.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
@@ -45,7 +45,7 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ st.product.price|floatformat }} руб.</span>
-                            <button onclick="buyRequest({{ st.product.id }})" class="buy_btn">Купить</button>
+                            <button onclick="buyRequest(this, {{ st.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
@@ -62,7 +62,7 @@
                         </a>
                         <div class="buy_area">
                             <span>{{ creation.product.price|floatformat }} руб.</span>
-                            <button onclick="buyRequest({{ creation.product.id }})" class="buy_btn">Купить</button>
+                            <button onclick="buyRequest(this, {{ creation.product.id }})" class="buy_btn">Купить</button>
                         </div>
                     </li>
                     {% endfor %}
