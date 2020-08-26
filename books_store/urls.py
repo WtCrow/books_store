@@ -21,7 +21,7 @@ handler404 = 'store.views.custom_handler404'
 
 urlpatterns = [
     path('', include('store.urls')),
-    path('', include('profiles.urls')),
+    path('accounts/', include('profiles.urls')),
     path('admin/', admin.site.urls),
     path('accounts/login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
