@@ -20,6 +20,6 @@ If you want start this project local:
 5) Applying migrations: `python manage.py migrate`
 6) Parse information for store products: `python store/parser.py` (Parser can be not worked if site changed).
 7) Create super user for django admin `django-admin createsuperuser`
-8) Start `python manage.py runserver` or start by gunicorn `gunicorn books_store.wsgi --log-file -`
-9) go to url localhost:8000
+8) Start `python manage.py runserver` or start by gunicorn `gunicorn books_store.wsgi`
+9) go to url http://localhost:8000/
 10) Profit!

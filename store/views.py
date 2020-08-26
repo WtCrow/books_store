@@ -144,7 +144,7 @@ class Find(PageNumbersList, View):
                       )
 
 
-class GetBasketPage(TemplateView, LoginRequiredMixin):
+class GetBasketPage(LoginRequiredMixin, TemplateView):
     template_name = 'store/basket.html'
 
 
