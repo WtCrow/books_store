@@ -31,7 +31,7 @@ class Product(models.Model):
 
 
 class Author(models.Model):
-    name = models.CharField(max_length=50, db_index=True)
+    name = models.CharField(max_length=50, db_index=True, unique=True)
 
     def __str__(self):
         return self.name
@@ -103,6 +103,9 @@ class BasketItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_query_name='basket_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_query_name='basket_items')
     count = models.IntegerField(validators=[MinValueValidator(0)])
+
+    class Meta:
+        unique_together = ('user', 'product')
 
     def __str__(self):
         return f'user: {self.user} product: {self.product}'
