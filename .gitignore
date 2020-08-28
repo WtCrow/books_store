@@ -3,9 +3,7 @@
 __pycache__/
 venv/
 migrations/
-**/static/**/image/
-*.jpg
-*.png
+store/static/store/image/
 *.exe
 *.log
 /staticfiles
