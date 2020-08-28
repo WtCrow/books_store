@@ -34,7 +34,7 @@ class ProductM2MInline(admin.TabularInline):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    search_fields = ('name', 'subcategory')
+    search_fields = ('name', 'subcategory__name')
     list_filter = ('date_pub', )
     ordering = ('-date_pub', )
     list_display = ('name', 'subcategory', 'price',
@@ -43,17 +43,17 @@ class ProductAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
     inlines = (ProductM2MInline, )
-    search_fields = ('user', 'id')
+    search_fields = ('user__username', 'id')
     list_display = ('id', 'user')
 
 
 class ProductInOrderAdmin(admin.ModelAdmin):
-    search_fields = ('product__name', 'order', )
+    search_fields = ('product__name', 'order__products__name', 'order__user__username', )
     list_display = ('product', 'order', 'count', 'price')
 
 
 class BasketItemAdmin(admin.ModelAdmin):
-    search_fields = ('user', 'product__name', )
+    search_fields = ('user__username', 'product__name', )
     list_display = ('user', 'product', 'count')
 
 
