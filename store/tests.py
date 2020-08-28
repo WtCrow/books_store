@@ -46,17 +46,24 @@ class TestShading:
 
             test_author = Author.objects.create(name='test_author')
 
-            for class_model in classes_product_models:
+            for class_model in classes_product_models.values():
                 count_products_in_category = 40
                 name_class = class_model.__name__
                 for i in range(0, count_products_in_category):
+                    if class_model == Book:
+                        specific_product = 'bk'
+                    elif class_model == Stationery:
+                        specific_product = 'st'
+                    else:
+                        specific_product = 'cr'
                     product = Product.objects.create(
                         subcategory=test_subcategory,
                         description='-',
                         price=100,
                         name=f'{name_class}_{i}',
                         count_in_stock=5,
-                        picture_name='/test.jpg'
+                        picture_name='/test.jpg',
+                        specific_product=specific_product,
                     )
 
                     specific_product = class_model.objects.create(
@@ -174,7 +181,7 @@ class TestIndexView(TestShading.BaseTest):
         """
         self.go_to_page(INDEX_URL)
 
-        for cls in classes_product_models:
+        for cls in classes_product_models.values():
             # get names products
             product_names = cls.objects \
                        .filter(product__count_in_stock__gt=0) \
@@ -267,7 +274,7 @@ class TestFind(TestShading.TestCategoryMixin):
         """Get last names from all class products"""
         products = []
 
-        for class_product_model in classes_product_models:
+        for class_product_model in classes_product_models.values():
             products += class_product_model.objects.all()\
                 .values('product__name') \
                 .filter(Q(product__name__icontains=self.search_text)
@@ -306,17 +313,24 @@ class TestBasketAPI(TestCase):
 
         test_author = Author.objects.create(name='test_author')
 
-        for class_model in classes_product_models:
+        for class_model in classes_product_models.values():
             count_products_in_category = 40
             name_class = class_model.__name__
             for i in range(0, count_products_in_category):
+                if class_model == Book:
+                    specific_product = 'bk'
+                elif class_model == Stationery:
+                    specific_product = 'st'
+                else:
+                    specific_product = 'cr'
                 product = Product.objects.create(
                     subcategory=test_subcategory,
                     description='-',
                     price=100,
                     name=f'{name_class}_{i}',
                     count_in_stock=5,
-                    picture_name='/test.jpg'
+                    picture_name='/test.jpg',
+                    specific_product=specific_product,
                 )
 
                 specific_product = class_model.objects.create(

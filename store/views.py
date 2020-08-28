@@ -102,7 +102,7 @@ class Find(PageNumbersList, View):
         # class_product_models - variable from store/models.py, contain all subclass Product model
         # In self.template need pass specific product class, also Product.objects.filter no way
         products = []
-        for class_product_model in classes_product_models:
+        for class_product_model in classes_product_models.values():
             sql_table_name = class_product_model._meta.db_table
             if request.user.is_authenticated:
                 select = {'is_in_basket': f"""

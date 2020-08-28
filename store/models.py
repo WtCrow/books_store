@@ -18,6 +18,11 @@ class Subcategory(models.Model):
 
 class Product(models.Model):
     """Base class for products"""
+    specific_products = (
+        ('bk', 'Book'),
+        ('cr', 'Creation'),
+        ('st', 'Stationery'),
+    )
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='product')
     description = models.TextField(blank=False)
     price = models.FloatField(validators=[MinValueValidator(0)])
@@ -25,6 +30,7 @@ class Product(models.Model):
     count_in_stock = models.IntegerField(validators=[MinValueValidator(0)])
     picture_name = models.FileField(blank=True)
     date_pub = models.DateTimeField(default=timezone.now)
+    specific_product = models.CharField(choices=specific_products, blank=False, default='bk', max_length=5)
 
     def __str__(self):
         return self.name
@@ -131,4 +137,4 @@ def change_count_in_stock(sender, instance, **kwargs):
             .exclude(user=instance.order.user).update(count=count_in_stock)
 
 
-classes_product_models = [Book, Stationery, Creation]
+classes_product_models = {'bk': Book, 'st': Stationery, 'cr': Creation}

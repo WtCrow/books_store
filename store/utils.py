@@ -1,4 +1,4 @@
-from .models import Subcategory, classes_product_models, BasketItem
+from .models import Subcategory, classes_product_models, BasketItem, Book
 from django.shortcuts import render, reverse, get_object_or_404
 from django.views.generic import DetailView
 from django.http import Http404
@@ -134,8 +134,5 @@ class ProductPageMixin(DetailView):
 
 def get_specific_object(product):
     """Get specific Product class and return this object"""
-
-    for class_product_model in classes_product_models:
-        obj_model = class_product_model.objects.filter(product=product)
-        if obj_model:
-            return obj_model[0]
+    specific_model = classes_product_models[product.specific_product]
+    return specific_model.objects.get(product=product)

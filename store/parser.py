@@ -27,6 +27,12 @@ class ProductsParser:
         self.base_url = 'https://www.chitai-gorod.ru'
         self.part_url = part_url
         self.class_model = class_model
+        if class_model == Book:
+            self.specific_product = 'bk'
+        elif class_model == Stationery:
+            self.specific_product = 'st'
+        else:
+            self.specific_product = 'cr'
 
         if not Subcategory.objects.filter(name=subcategory_name):
             self.subcategory = Subcategory.objects.create(name=subcategory_name, normalize_name=normalize_name)
@@ -91,6 +97,7 @@ class ProductsParser:
             name=name,
             count_in_stock=random.randint(1, 10),
             picture_name=full_image_name,
+            specific_product=self.specific_product,
         )
 
         return product
