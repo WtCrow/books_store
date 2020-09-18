@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from .utils import get_specific_object
 from .models import BasketItem
@@ -31,15 +32,15 @@ class BasketItemCurrentUserSerializer(serializers.ModelSerializer):
         product = self.instance.product if self.instance else attrs.get('product')
 
         if self.instance and self.instance.user != self.context['request'].user:
-            raise serializers.ValidationError('Wrong user')
+            raise serializers.ValidationError(_('Wrong user'))
         if 'count' in attrs:
             if attrs['count'] > product.count_in_stock:
-                raise serializers.ValidationError('Count in stock less than requested count')
+                raise serializers.ValidationError(_('Count in stock less than requested count'))
             if self.context['request'].method == 'POST' and attrs['count'] == 0:
-                raise serializers.ValidationError("Count can't be zero if method POST")
+                raise serializers.ValidationError(_("Count can't be zero if method POST"))
         if self.context['request'].method == 'POST'\
                 and BasketItem.objects.filter(product=product, user=self.context['request'].user).exists():
-            raise serializers.ValidationError('This product already in basket, use PATH method for update count')
+            raise serializers.ValidationError(_('This product already in basket, use PATH method for update count'))
 
         return attrs
 
