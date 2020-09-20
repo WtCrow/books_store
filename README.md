@@ -21,7 +21,7 @@ If you want start this project local:
 - EMAIL_PASSWORD
 5) Create migration: `python manage.py makemigrations store`
 6) Applying migrations: `python manage.py migrate`
-7) (Optional) Parse information for store products: `python store/parser.py` (Parser can be not worked if site changed).
+7) Parse information for store products: `python store/parser.py` (Parser can be not worked if site changed).
 8) (Optional) Create super user for django admin `django-admin createsuperuser`
 9) Start `python manage.py runserver` or start by gunicorn `gunicorn books_store.wsgi`
 10) go to url http://localhost:8000/
