@@ -28,6 +28,7 @@
         return cookieValue;
     }
     let is_auth_user ={% if user.is_authenticated %} true{% else %} false{% endif %};
+    let STATIC_URL = "{% static '' %}";
 </script>
 {% endblock %}
 <body>

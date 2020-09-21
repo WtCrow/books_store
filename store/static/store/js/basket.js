@@ -1,7 +1,6 @@
 // TODO: replace to JS framework
 BASKET_API_URL = "/store/api/v1/basket/";
 BUY_URL = "/basket/buy/"
-PATH_TO_STATIC = "/static/";
 
 
 function recalculateTotalPrice() {
@@ -63,10 +62,9 @@ $(document).ready(function() {
     })
     .done(function(response) {
         function getProductCardHtml(link, image_link, name, product_id, basket_item_id, price, count) {
-            static_url = window.location.protocol + "//" + window.location.host + PATH_TO_STATIC;
             return `<li id=${basket_item_id}>
                         <div class="product">
-                            <a href="${link}"><img src="${static_url + image_link}"></a>
+                            <a href="${link}"><img src="${STATIC_URL + image_link}"></a>
                             <a href="${link}">
                                 <div class="info_product">
                                     <span class="name_product">${name}</span>
